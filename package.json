@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "format": "prettier --write ./src"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.5.0",
@@ -43,11 +44,17 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@types/csv-parse": "^1.2.2",
+    "@types/encoding-japanese": "^2.2.1",
+    "@types/iconv-lite": "^0.0.1",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/sqlite3": "^3.1.11",
+    "csv-parse": "^5.5.6",
     "echarts": "^5.5.1",
     "electron-squirrel-startup": "^1.0.1",
+    "encoding-japanese": "^2.2.0",
+    "iconv-lite": "^0.6.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sqlite3": "^5.1.7",

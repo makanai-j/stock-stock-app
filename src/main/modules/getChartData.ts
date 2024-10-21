@@ -1,17 +1,14 @@
 import yahooFinance from 'yahoo-finance2'
 import { ChartOptions } from 'yahoo-finance2/dist/esm/src/modules/chart'
-import { YFOptions } from './yfOption'
+import { YFOptions, YFChartObject } from '../../types/yfTypes'
 
-export interface YFChartObject {
-  date: Date
-  high: number
-  volume: number
-  open: number
-  low: number
-  close: number
-  adjclose?: number
-}
-
+/**
+ *yahoo-financeから株式データを取得
+ *
+ * @param symbol 銘柄名
+ * @param queryOptions 足の間隔や開始・終了日時
+ * @returns yahoo-finenceからの株式データ
+ */
 export const yfGetChartData = async (
   symbol: string,
   queryOptions: YFOptions
@@ -19,6 +16,6 @@ export const yfGetChartData = async (
   const qo = queryOptions as ChartOptions
   qo.return = 'array'
   const chart = await yahooFinance.chart(symbol, qo)
-  console.log('chart1', chart)
+  //console.log(chart)
   return chart.quotes
 }

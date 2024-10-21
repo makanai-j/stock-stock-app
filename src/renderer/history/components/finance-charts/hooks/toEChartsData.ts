@@ -1,14 +1,20 @@
-import { YFChartObject } from '../../finance/finance'
+import { YFChartObject } from '../../../../../types/yfTypes'
 
-interface EChartsOptionData {
+type EChartsOptionData = {
   xAxisData: string[]
   xAxisData0: string[]
   yAxisData: number[][]
   markLineData: string[]
 }
 
+/**
+ *
+ * @param yfChartData yahoo-financeAPIからの株式価格オブジェクト
+ * @param interval 足の間隔
+ * @returns eCharts用の軸データとマークラインデータ
+ */
 export const toEChartsData = (
-  objects: YFChartObject[],
+  yfChartData: YFChartObject[],
   interval = '5m'
 ): EChartsOptionData => {
   const eChartsData: EChartsOptionData = {
@@ -18,8 +24,8 @@ export const toEChartsData = (
     markLineData: [],
   }
 
-  for (let i = 0; i < objects.length; i++) {
-    const obj = objects[i]
+  for (let i = 0; i < yfChartData.length; i++) {
+    const obj = yfChartData[i]
     const x = obj.date.toLocaleTimeString('ja-JP', {
       year: 'numeric',
       month: '2-digit',
@@ -41,19 +47,16 @@ export const toEChartsData = (
     eChartsData.xAxisData.push(x)
     eChartsData.yAxisData.push(y)
 
-    if (i == 0) {
-      eChartsData.xAxisData0.push('')
-      continue
-    }
-
     // 前のデータの日時要素
-    const preDate: Date = objects[i - 1].date
+    const preDate: Date = yfChartData[i == 0 ? 0 : i - 1].date
 
+    //  足の間隔によってDateのフォーマットを変える
     switch (interval) {
       case '1d':
       case '5d':
       case '1wk':
-        if (obj.date.getMonth() != preDate.getMonth()) {
+        if (i == 0 || obj.date.getMonth() != preDate.getMonth()) {
+          console.log('month')
           eChartsData.xAxisData0.push(obj.date.getMonth().toString())
         } else {
           eChartsData.xAxisData0.push('')
@@ -61,7 +64,7 @@ export const toEChartsData = (
         break
       case '1mo':
       case '3m0':
-        if (obj.date.getFullYear() != preDate.getFullYear()) {
+        if (i == 0 || obj.date.getFullYear() != preDate.getFullYear()) {
           eChartsData.xAxisData0.push(obj.date.getFullYear().toString())
         } else {
           eChartsData.xAxisData0.push('')
@@ -69,8 +72,7 @@ export const toEChartsData = (
         break
       // 1m ～ 1h
       default:
-        if (obj.date.getDate() !== preDate.getDate()) {
-          console.log(preDate, '////', obj.date)
+        if (i == 0 || obj.date.getDate() !== preDate.getDate()) {
           eChartsData.xAxisData0.push(
             obj.date.getMonth() + '/' + obj.date.getDate()
           )
@@ -79,6 +81,5 @@ export const toEChartsData = (
         }
     }
   }
-
   return eChartsData
 }

@@ -1,9 +1,8 @@
-import { YFChartObject, YFOptions } from '../finance/finance'
+import { YFChartObject, YFOptions } from '../types/yfTypes'
 
 export interface IElectronAPI {
-  onUpdateCounter: (callback: (value: number) => void) => Electron.IpcRenderer
-  counterValue: (value: number) => void
   financeData: (symbol: string, interval: YFOptions) => Promise<YFChartObject[]>
+  fileRead: () => Promise<any>
 }
 
 declare global {

@@ -13,7 +13,7 @@ const axisPointer = {
 }
 const grid = [
   {
-    left: 'left',
+    left: 10,
     right: 10,
     top: 15,
     containLabel: true,
@@ -69,6 +69,7 @@ const dataZoom = [
     start: 98,
     end: 100,
     minValueSpan: 14,
+    labelFormatter: () => '',
   },
 ]
 
@@ -99,6 +100,18 @@ export const xAxis = {
 }
 export const xAxis0 = {
   ...xAxis,
+  axisTick: {
+    show: true,
+    interval: (index: number, value: string) => value != '',
+    alignWithLabel: false,
+    inside: true,
+    length: 380,
+    lineStyle: {
+      color: 'gray',
+      type: 'solid', //[0.5, 2.5],
+      opacity: 0.2,
+    },
+  },
   axisLabel: {
     /*
     formatter: function (value: string) {
@@ -108,7 +121,9 @@ export const xAxis0 = {
     },*/
     align: 'center',
     fontSize: 9,
-    interval: (index: number, value: string) => value != '',
+    interval: (index: number, value: string) => {
+      return value != ''
+    },
   },
   axisPointer: {
     show: false,
@@ -123,22 +138,9 @@ export const series = {
     borderColor: '#FF0055',
     borderColor0: '#12DDD6',
   },
-  data: [
-    [20, 34, 10, 38],
-    [40, 35, 30, 50],
-    [31, 38, 33, 44],
-    [38, 15, 5, 42],
-  ],
+  data: [] as number[][],
   markLine: {
-    data: [
-      {
-        xAxis: '2017-10-25',
-        //coord: [0,1]
-      },
-      {
-        yAxis: 45,
-      },
-    ],
+    data: [],
     symbol: 'none',
     silent: true,
     lineStyle: {
@@ -194,6 +196,9 @@ export const series0 = {
   },
 }
 
+/**
+ * eChartsの初期設定
+ */
 export const initialEchartsOption = {
   axisPointer,
   grid,
