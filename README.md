@@ -1,11 +1,13 @@
 # プロジェクトについて
 
-![Contributors][contributors-shield]
 [![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![forks-shield]][forks-url]
+![forks-shield][forks-url]
+[![Forks]][forks-url]
+![Forks][forks-url]
+[![Forks][forks-shield]]
+![Forks][forks-shield]
+![Forks]
 
 ## 仕様技術
 
