@@ -92,6 +92,7 @@ const _insert = (
             return reject(commitErr.message)
           }
 
+          console.log('to select')
           resolve(CRUD.select([...updatedIds, tradeData.id]))
         })
       }
@@ -210,7 +211,9 @@ export class CRUD {
         selectSql += `WHERE id IN (${placeholders})`
       }
       selectSql += ' ORDER BY date DESC '
+      console.log('start all')
       db.all(selectSql, ids, (err, row) => {
+        console.log('end all select')
         if (err) return reject(err)
         resolev(row)
       })
