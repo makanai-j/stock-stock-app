@@ -54,128 +54,151 @@ db.run(
     'tax REAL NOT NULL)'
 )
 
-const _insert = async (
+const _insert = (
   tradeData: tradeDataObject,
   updatedIds: string[] = []
 ): Promise<any> => {
-  //return new Promise((resolve, reject) => {
-  const insertSellSql = `INSERT INTO trades (id, date, code, tradeType, holdType, quantity, restQuantity, price, fee, tax)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  return new Promise((resolve, reject) => {
+    const insertSellSql = `
+      INSERT INTO trades (id, date, code, tradeType, holdType, quantity, restQuantity, price, fee, tax)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `
 
-  db.run(
-    insertSellSql,
-    [
-      tradeData.id,
-      tradeData.date,
-      tradeData.code,
-      tradeData.tradeType,
-      tradeData.holdType,
-      tradeData.quantity,
-      isNewTradeType(tradeData.tradeType) ? tradeData.quantity : 0,
-      tradeData.price,
-      tradeData.fee,
-      tradeData.tax,
-    ],
-    (err) => {
-      if (err) {
-        console.log('No.2: ', err.message)
-        db.run('ROLLBACK') // エラーがあればロールバック
-        throw new Error(err.message)
+    console.log('insert')
+
+    db.run(
+      insertSellSql,
+      [
+        tradeData.id,
+        tradeData.date,
+        tradeData.code,
+        tradeData.tradeType,
+        tradeData.holdType,
+        tradeData.quantity,
+        isNewTradeType(tradeData.tradeType) ? tradeData.quantity : 0,
+        tradeData.price,
+        tradeData.fee,
+        tradeData.tax,
+      ],
+      (err) => {
+        if (err) {
+          db.run('ROLLBACK')
+          return reject(err.message)
+        }
+
+        db.run('COMMIT', (commitErr) => {
+          if (commitErr) {
+            db.run('ROLLBACK')
+            return reject(commitErr.message)
+          }
+
+          resolve(CRUD.select([...updatedIds, tradeData.id]))
+        })
       }
-
-      db.run('COMMIT', () => {
-        return CRUD.select([...updatedIds, tradeData.id])
-      })
-    }
-  )
-  //})
+    )
+  })
 }
 
 export class CRUD {
   static async insert(tradeData: tradeDataObject): Promise<any> {
-    //return new Promise((resolve, reject) => {
-    db.run('BEGIN TRANSACTION;', (err) => {
-      if (err) {
-        console.log('No.1: ', err.message)
-        db.run('ROLLBACK')
-        throw new Error(err.message)
-      }
+    return new Promise((resolve, reject) => {
+      db.run('BEGIN TRANSACTION;', (err) => {
+        if (err) {
+          console.log('No.1: ', err.message)
+          return reject(err.message)
+        }
 
-      // 返済取引の場合は
-      if (!isNewTradeType(tradeData.tradeType)) {
-        const buyTradeSql =
-          'SELECT * ' +
-          'FROM trades ' +
-          'WHERE code = ? ' +
-          'AND tradeType = ? ' +
-          'AND restQuantity > 0 ' + // 既に返済済みは排除
-          'ORDER BY date ASC ' // 古いデータを優先
+        // 返済取引の場合は
+        if (!isNewTradeType(tradeData.tradeType)) {
+          const buyTradeSql =
+            'SELECT * ' +
+            'FROM trades ' +
+            'WHERE code = ? ' +
+            'AND tradeType = ? ' +
+            'AND restQuantity > 0 ' + // 既に返済済みは排除
+            'ORDER BY date ASC ' // 古いデータを優先
 
-        const updatedIds: string[] = []
+          const updatedIds: string[] = []
 
-        db.all(
-          buyTradeSql,
-          [tradeData.code, turnedTradeType(tradeData.tradeType)],
-          (err, rows: any[]) => {
-            if (err) {
-              console.error('No.3: ', err.message)
-              db.run('ROLLBACK')
-              throw new Error(err.message)
-            }
+          db.all(
+            buyTradeSql,
+            [tradeData.code, turnedTradeType(tradeData.tradeType)],
+            (err, rows: any[]) => {
+              console.log('rows', rows)
 
-            let repayQuant = tradeData.quantity
-
-            // 新規取引のデータを回し終わるか、返済数量が0になったら終了
-            for (let i = 0; i < rows.length && repayQuant != 0; i++) {
-              const row = rows[i]
-              console.log(row.date)
-              let rowRestQuantity = row['restQuantity']
-
-              // 新規取引数量 >= 残り返済取引数量 の場合
-              if (rowRestQuantity >= repayQuant) {
-                rowRestQuantity = rowRestQuantity - repayQuant
-                repayQuant = 0
-                // 残り返済取引数量のほうが多い場合
-              } else {
-                repayQuant = repayQuant - rowRestQuantity
-                rowRestQuantity = 0
+              if (err) {
+                console.error('No.3: ', err.message)
+                db.run('ROLLBACK') // エラーがあればロールバック
+                return reject(err.message)
               }
 
-              // 新規取引のrestQuantityを更新
-              const updateBuySql =
-                'UPDATE trades SET restQuantity = ? WHERE id = ? '
+              if (rows.length == 0) {
+                console.log('in row if')
+                const message = '条件に合う新規取引がありません'
+                console.error('No.3_1: ', message)
+                db.run('ROLLBACK') // エラーがあればロールバック
+                return reject(message)
+              }
 
-              db.run(updateBuySql, [rowRestQuantity, row.id], (err) => {
-                if (err) {
-                  console.log('No.4: ', err.message)
-                  db.run('ROLLBACK') // エラーがあればロールバック
-                  throw new Error(err.message)
+              console.log('rows after ')
+
+              let repayQuant = tradeData.quantity
+
+              // 新規取引のデータを回し終わるか、返済数量が0になったら終了
+              for (let i = 0; i < rows.length && repayQuant > 0; i++) {
+                const row = rows[i]
+                console.log(row.date)
+                let rowRestQuantity = row['restQuantity']
+
+                // 新規取引数量 >= 残り返済取引数量 の場合
+                if (rowRestQuantity >= repayQuant) {
+                  rowRestQuantity = rowRestQuantity - repayQuant
+                  repayQuant = 0
+                  // 残り返済取引数量のほうが多い場合
+                } else {
+                  repayQuant = repayQuant - rowRestQuantity
+                  rowRestQuantity = 0
                 }
 
-                updatedIds.push(row.id)
-              })
-            }
+                // 新規取引のrestQuantityを更新
+                const updateBuySql =
+                  'UPDATE trades SET restQuantity = ? WHERE id = ? '
 
-            // 返済数量が残っていた場合ROLLBACK
-            if (repayQuant) {
-              console.log(
-                'No.6 : ',
-                'No matching buy trade or insufficient restQuantity.'
-              )
-              db.run('ROLLBACK') // 条件を満たさない場合もロールバック
-              throw new Error(
-                '返済取引と合致する新規取引が見つかりませんでした。'
-              )
-            } else {
-              return _insert(tradeData)
+                db.run(updateBuySql, [rowRestQuantity, row.id], (err) => {
+                  if (err) {
+                    console.log('No.4: ', err.message)
+                    db.run('ROLLBACK') // エラーがあればロールバック
+                    return reject(err.message)
+                  }
+
+                  updatedIds.push(row.id)
+
+                  // 返済数量がなくなった場合
+                  // アップデートされた行をPromiseで返す
+                  if (repayQuant === 0) {
+                    return resolve(_insert(tradeData, updatedIds))
+
+                    // 返済数量が残っている
+                    // かつ、新規取引のデータが尽きた場合
+                  } else if (rows.length === 0) {
+                    console.log(
+                      'No.6 : ',
+                      'No matching buy trade or insufficient restQuantity.'
+                    )
+                    db.run('ROLLBACK')
+                    return reject(
+                      '返済取引と合致する新規取引が見つかりませんでした。'
+                    )
+                  }
+                })
+              }
             }
-          }
-        )
-      } else {
-        return _insert(tradeData)
-      }
+          )
+        } else {
+          return resolve(_insert(tradeData))
+        }
+      })
     })
-    //})
   }
 
   static async select(ids?: string[]): Promise<any> {
@@ -258,14 +281,13 @@ export class CRUD {
   }
 
   static async delete(ids: [string, ...string[]]): Promise<void> {
-    new Promise((resolev, reject) => {
-      // プレースホルダーを配列の長さに合わせて生成
-      const placeholders = ids.map(() => '?').join(',')
-      const deleteSql = `DELETE FROM trades WHERE id IN (${placeholders})`
-
+    // プレースホルダーを配列の長さに合わせて生成
+    const placeholders = ids.map(() => '?').join(',')
+    const deleteSql = `DELETE FROM trades WHERE id IN (${placeholders})`
+    return new Promise((resolev, reject) => {
       db.all(deleteSql, ids, (err, row) => {
         if (err) return reject(err)
-        resolev(row)
+        resolev()
       })
     })
   }
