@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { isIntervalString, YFOptions } from '../../types/yfTypes'
+//import { isIntervalString, YFOptions } from '../../types/yfTypes'
 import FinanceChart from './components/finance-charts'
 
 /**
@@ -15,12 +15,10 @@ const History = () => {
   } as YFOptions)
 
   const setIntervalYfOption = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (isIntervalString(e.target.value)) {
-      setYfOption({
-        ...yfOption,
-        interval: e.target.value,
-      })
-    }
+    setYfOption({
+      ...yfOption,
+      interval: e.target.value as interval,
+    })
   }
 
   const setPeriod = (date: Date | string) => {

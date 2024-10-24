@@ -1,4 +1,4 @@
-import { YFChartObject } from '../../../../../types/yfTypes'
+//import { YFChartObject } from '../../../../../types/yfTypes'
 
 type EChartsOptionData = {
   xAxisData: string[]

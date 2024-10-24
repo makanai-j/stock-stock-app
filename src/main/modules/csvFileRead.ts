@@ -1,5 +1,6 @@
 import { dialog } from 'electron'
 import { readFileSync } from 'fs'
+// eslint-disable-next-line import/no-unresolved
 import { parse } from 'csv-parse/sync'
 import * as Encoding from 'encoding-japanese'
 import iconv from 'iconv-lite'
@@ -18,16 +19,15 @@ export const csvFileRead = async (): Promise<any> => {
       const utf8CsvData = iconv.decode(csvBuffer, codeType, {
         addBOM: false,
       })
-      const utf8Array = utf8CsvData.split('\n')
-      const csvArray: any = parse(iconv.encode(utf8Array.join('\n'), 'UTF8'), {
+      const csvArray = parse(iconv.encode(utf8CsvData, 'UTF8'), {
         relax_column_count: true,
       })
-      if (csvArray[0] == undefined)
-        throw new Error('Failed to convert to csv file!!')
-      return csvArray
-    } else {
+
+      if (typeof csvArray[0][0] == 'string') return csvArray
+
       throw new Error('Failed to convert to csv file!!')
     }
+    throw new Error('Failed to convert to csv file!!')
   } else {
     throw new Error('File selection canceled!!')
   }

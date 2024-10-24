@@ -1,5 +1,4 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { YFOptions } from '../types/yfTypes'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   /**
@@ -13,7 +12,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   /**
    * メインプロセスへcsvファイルの読み込みを要求
    *
-   * @returns
+   * @returns csvファイルのデータ
    */
   fileRead: async () => await ipcRenderer.invoke('fileRead'),
+  insert: async (tradeDatas: tradeDataObject[]) =>
+    await ipcRenderer.invoke('insert', tradeDatas),
+  select: async (id?: number) => ipcRenderer.invoke('select', id),
+  update: async (id: number, tradeData: tradeDataObject) =>
+    ipcRenderer.invoke('update', id, tradeData),
+  delete: async (id: number) => ipcRenderer.invoke('delete', id),
 })

@@ -1,8 +1,8 @@
-# プロジェクトについて
+## プロジェクトについて
 
 株取引を記録するデスクトップアプリ
 
-## 使用技術
+### 使用技術
 
 [![nodejs][node.js]][nodejs-url]
 [![React][React.js]][React-url]
@@ -10,7 +10,11 @@
 [![webpack][Webpack.com]][webpack-url]
 [![electron][Electron.com]][Electron-url]
 
-# はじめる
+## はじめる
+
+### 前提条件
+
+### インストール
 
 ## 使用法
 
@@ -29,5 +33,3 @@
 [Electron-url]: https://www.electronjs.org/ja/
 [Webpack.com]: https://img.shields.io/badge/webpack-2b3a42?style=for-the-badge&logo=webpack&logoColor=%238DD6F9
 [Webpack-url]: https://webpack.js.org/
-
-ELECTRON-47848F?style=for-the-badge&logo=electron&logoColor=47848F

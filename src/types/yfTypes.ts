@@ -22,7 +22,7 @@ type interval = (typeof intervalArray)[number]
  * @period1 開始日時
  * @period2 終了日時
  */
-export type YFOptions = {
+type YFOptions = {
   period2?: string | number | Date | undefined
   interval?: interval
   period1: string | number | Date
@@ -31,7 +31,7 @@ export type YFOptions = {
 /**
  * yahoo-financeからの株式データ
  */
-export type YFChartObject = {
+type YFChartObject = {
   date: Date
   high: number
   volume: number
@@ -39,8 +39,4 @@ export type YFChartObject = {
   low: number
   close: number
   adjclose?: number
-}
-
-export const isIntervalString = (value: any): value is interval => {
-  return intervalArray.includes(value)
 }

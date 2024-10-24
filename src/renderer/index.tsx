@@ -8,12 +8,6 @@ import './index.css'
 // 解決するにはやっぱり preload を使うしかなさそう
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-let count = 0
-window.electronAPI.onUpdateCounter((value: number) => {
-  count += value
-  console.log(count, 'from index.tsx')
-  window.electronAPI.counterValue(count)
-})
 
 root.render(
   <React.StrictMode>

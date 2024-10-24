@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import * as echarts from 'echarts'
 import { toEChartsData } from './hooks/toEChartsData'
 import { initialEchartsOption, series, series0 } from './hooks/eChartsOption'
-import { YFOptions } from '../../../../types/yfTypes'
+//import { YFOptions } from '../../../../types/yfTypes'
 
 /**
  * 株のチャート
