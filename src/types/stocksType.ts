@@ -28,3 +28,14 @@ type tradeDataObject = {
   fee: number
   tax: number
 }
+
+type tradeDataKey =
+  | 'date'
+  | 'code'
+  | 'tradeType'
+  | 'holdType'
+  | 'quantity'
+  | 'restQuantity'
+  | 'price'
+  | 'fee'
+  | 'tax'

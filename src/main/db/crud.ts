@@ -54,244 +54,167 @@ db.run(
     'tax REAL NOT NULL)'
 )
 
-const _insert = (
-  tradeData: tradeDataObject,
-  updatedIds: string[] = []
-): Promise<any> => {
+const executeSQL = (sql: string, params: any[] = []): Promise<void> => {
+  console.log(sql)
   return new Promise((resolve, reject) => {
-    const insertSellSql = `
-      INSERT INTO trades (id, date, code, tradeType, holdType, quantity, restQuantity, price, fee, tax)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `
-
-    console.log('insert')
-
-    db.run(
-      insertSellSql,
-      [
-        tradeData.id,
-        tradeData.date,
-        tradeData.code,
-        tradeData.tradeType,
-        tradeData.holdType,
-        tradeData.quantity,
-        isNewTradeType(tradeData.tradeType) ? tradeData.quantity : 0,
-        tradeData.price,
-        tradeData.fee,
-        tradeData.tax,
-      ],
-      (err) => {
-        if (err) {
-          db.run('ROLLBACK')
-          return reject(err.message)
-        }
-
-        db.run('COMMIT', (commitErr) => {
-          if (commitErr) {
-            db.run('ROLLBACK')
-            return reject(commitErr.message)
-          }
-
-          console.log('to select')
-          resolve(CRUD.select([...updatedIds, tradeData.id]))
-        })
-      }
-    )
+    db.run(sql, params, (err) => {
+      if (err) return reject(err.message)
+      resolve()
+    })
   })
 }
 
-export class CRUD {
-  static async insert(tradeData: tradeDataObject): Promise<any> {
-    return new Promise((resolve, reject) => {
-      db.run('BEGIN TRANSACTION;', (err) => {
-        if (err) {
-          console.log('No.1: ', err.message)
-          return reject(err.message)
-        }
+const _insert = async (trades: tradeDataObject[]): Promise<void> => {
+  const insertSql = `INSERT INTO trades VALUES ${trades.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(',')}`
+  const insertData = trades.flatMap((trade) => [
+    trade.id,
+    trade.date,
+    trade.code,
+    trade.tradeType,
+    trade.holdType,
+    trade.quantity,
+    trade.quantity,
+    trade.price,
+    trade.fee,
+    trade.tax,
+  ])
 
-        // 返済取引の場合は
-        if (!isNewTradeType(tradeData.tradeType)) {
-          const buyTradeSql =
-            'SELECT * ' +
-            'FROM trades ' +
-            'WHERE code = ? ' +
-            'AND tradeType = ? ' +
-            'AND restQuantity > 0 ' + // 既に返済済みは排除
-            'ORDER BY date ASC ' // 古いデータを優先
+  console.log('to insert')
+  await executeSQL(insertSql, insertData)
+}
 
-          const updatedIds: string[] = []
+const insertNewTrade = async (tradeDatas: tradeDataObject[]): Promise<void> => {
+  const newTrades = tradeDatas.filter((data) => isNewTradeType(data.tradeType))
+  if (newTrades.length) {
+    await _insert(newTrades)
+  }
+}
 
-          db.all(
-            buyTradeSql,
-            [tradeData.code, turnedTradeType(tradeData.tradeType)],
-            (err, rows: any[]) => {
-              console.log('rows', rows)
+const insertRepayTrade = async (
+  tradeDatas: tradeDataObject[]
+): Promise<void> => {
+  const repayTrades = tradeDatas.filter(
+    (data) => !isNewTradeType(data.tradeType)
+  )
 
-              if (err) {
-                console.error('No.3: ', err.message)
-                db.run('ROLLBACK') // エラーがあればロールバック
-                return reject(err.message)
-              }
+  if (!repayTrades.length) return
 
-              if (rows.length == 0) {
-                console.log('in row if')
-                const message = '条件に合う新規取引がありません'
-                console.error('No.3_1: ', message)
-                db.run('ROLLBACK') // エラーがあればロールバック
-                return reject(message)
-              }
+  const newTradeSql = `
+    SELECT * FROM trades 
+    WHERE code = ? AND tradeType = ? AND restQuantity > 0 
+    ORDER BY date ASC
+  `
+  try {
+    await executeSQL('BEGIN TRANSACTION')
 
-              console.log('rows after ')
-
-              let repayQuant = tradeData.quantity
-
-              // 新規取引のデータを回し終わるか、返済数量が0になったら終了
-              for (let i = 0; i < rows.length && repayQuant > 0; i++) {
-                const row = rows[i]
-                console.log(row.date)
-                let rowRestQuantity = row['restQuantity']
-
-                // 新規取引数量 >= 残り返済取引数量 の場合
-                if (rowRestQuantity >= repayQuant) {
-                  rowRestQuantity = rowRestQuantity - repayQuant
-                  repayQuant = 0
-                  // 残り返済取引数量のほうが多い場合
-                } else {
-                  repayQuant = repayQuant - rowRestQuantity
-                  rowRestQuantity = 0
-                }
-
-                // 新規取引のrestQuantityを更新
-                const updateBuySql =
-                  'UPDATE trades SET restQuantity = ? WHERE id = ? '
-
-                db.run(updateBuySql, [rowRestQuantity, row.id], (err) => {
-                  if (err) {
-                    console.log('No.4: ', err.message)
-                    db.run('ROLLBACK') // エラーがあればロールバック
-                    return reject(err.message)
-                  }
-
-                  updatedIds.push(row.id)
-
-                  // 返済数量がなくなった場合
-                  // アップデートされた行をPromiseで返す
-                  if (repayQuant === 0) {
-                    return resolve(_insert(tradeData, updatedIds))
-
-                    // 返済数量が残っている
-                    // かつ、新規取引のデータが尽きた場合
-                  } else if (rows.length === 0) {
-                    console.log(
-                      'No.6 : ',
-                      'No matching buy trade or insufficient restQuantity.'
-                    )
-                    db.run('ROLLBACK')
-                    return reject(
-                      '返済取引と合致する新規取引が見つかりませんでした。'
-                    )
-                  }
-                })
-              }
-            }
-          )
-        } else {
-          return resolve(_insert(tradeData))
-        }
+    for (const repayTrade of repayTrades) {
+      const rows: any[] = await new Promise((resolve, reject) => {
+        db.all(
+          newTradeSql,
+          [repayTrade.code, turnedTradeType(repayTrade.tradeType)],
+          (err, rows) => {
+            if (err) return reject(err.message)
+            resolve(rows)
+          }
+        )
       })
-    })
+
+      let repayQuant = repayTrade.quantity
+      const tradesToUpdate: tradeDataObject[] = []
+
+      for (const row of rows) {
+        if (repayQuant === 0) break
+
+        let rowRestQuantity = row.restQuantity
+
+        if (rowRestQuantity >= repayQuant) {
+          rowRestQuantity -= repayQuant
+          repayQuant = 0
+        } else {
+          repayQuant -= rowRestQuantity
+          rowRestQuantity = 0
+        }
+
+        tradesToUpdate.push({
+          ...row,
+          restQuantity: rowRestQuantity,
+        })
+      }
+
+      console.log('to update', tradesToUpdate)
+      await CRUD.update(tradesToUpdate, ['restQuantity'])
+
+      if (repayQuant)
+        throw new Error('No matching buy trade or insufficient restQuantity.')
+
+      await _insert([repayTrade])
+    }
+
+    await executeSQL('COMMIT')
+  } catch (err) {
+    console.log(err)
+    await executeSQL('ROLLBACK')
+    throw err
+  }
+}
+
+export class CRUD {
+  static async insert(trades: tradeDataObject[]): Promise<any> {
+    await insertNewTrade(trades)
+    await insertRepayTrade(trades)
   }
 
-  static async select(ids?: string[]): Promise<any> {
-    return new Promise((resolev, reject) => {
-      let selectSql = 'SELECT * FROM trades '
-      if (ids) {
-        // プレースホルダーを配列の長さに合わせて生成
-        const placeholders = ids.map(() => '?').join(',')
-        selectSql += `WHERE id IN (${placeholders})`
-      }
-      selectSql += ' ORDER BY date DESC '
+  static async select(ids?: string[]): Promise<any[]> {
+    const placeholders = ids?.length
+      ? `WHERE id IN (${ids.map(() => ' ? ').join(',')})`
+      : ''
+    const selectSql = `SELECT * FROM trades ${placeholders}  ORDER BY date ASC `
+
+    return new Promise((resolve, reject) => {
       console.log('start all')
       db.all(selectSql, ids, (err, row) => {
         console.log('end all select')
         if (err) return reject(err)
-        resolev(row)
+        resolve(row)
       })
     })
   }
 
-  static async update(data: any): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!data.id) {
-        return reject('データタイプが違います')
-      }
+  static async update(
+    trades: tradeDataObject[],
+    updateFields: [tradeDataKey, ...tradeDataKey[]] = [
+      'date',
+      'code',
+      'tradeType',
+      'holdType',
+      'quantity',
+      'price',
+      'fee',
+      'tax',
+    ]
+  ): Promise<void> {
+    if (!trades.length) return
 
-      const updateData: any[] = []
-      let updateSql = 'UPDATE trades SET '
-      const fields: string[] = []
+    const updateCaseClause = (field: tradeDataKey) => {
+      return `${field} = CASE id ${trades
+        .map((trade) => {
+          return ` WHEN '${trade.id}' THEN ${typeof trade[field] === 'string' ? `'${trade[field]}'` : trade[field]}`
+        })
+        .join(' ')} END`
+    }
 
-      // フィールドごとに更新データを準備
-      if (data.date) {
-        updateData.push(data.date)
-        fields.push('date = ?')
-      }
-      if (data.code) {
-        updateData.push(data.code)
-        fields.push('code = ?')
-      }
-      if (data.tradeType) {
-        updateData.push(data.tradeType)
-        fields.push('tradeType = ?')
-      }
-      if (data.holdType) {
-        updateData.push(data.holdType)
-        fields.push('holdType = ?')
-      }
-      if (data.quantity) {
-        updateData.push(data.quantity)
-        fields.push('quantity = ?')
-      }
-      if (data.price) {
-        updateData.push(data.price)
-        fields.push('price = ?')
-      }
-      if (data.fee) {
-        updateData.push(data.fee)
-        fields.push('fee = ?')
-      }
-      if (data.tax) {
-        updateData.push(data.tax)
-        fields.push('tax = ?')
-      }
+    const placeholders = updateFields.map(updateCaseClause).join(',')
+    const updateSql = `UPDATE trades SET ${placeholders} WHERE id IN (${trades.map(() => '?').join(',')})`
 
-      // 更新するフィールドがなければエラー
-      if (fields.length === 0) {
-        return reject('更新データが見つかりませんでした')
-      }
+    const ids = trades.map((trade) => trade.id)
 
-      // SQLクエリにWHERE句を追加してidで更新
-      updateSql += fields.join(', ') + ' WHERE id = ?'
-      updateData.push(data.id)
-
-      db.run(updateSql, updateData, (err) => {
-        if (err) {
-          console.log(err.message)
-          return reject(err.message)
-        }
-        resolve()
-      })
-    })
+    await executeSQL(updateSql, ids)
   }
 
   static async delete(ids: [string, ...string[]]): Promise<void> {
     // プレースホルダーを配列の長さに合わせて生成
     const placeholders = ids.map(() => '?').join(',')
     const deleteSql = `DELETE FROM trades WHERE id IN (${placeholders})`
-    return new Promise((resolev, reject) => {
-      db.all(deleteSql, ids, (err, row) => {
-        if (err) return reject(err)
-        resolev()
-      })
-    })
+    await executeSQL(deleteSql, ids)
   }
 }

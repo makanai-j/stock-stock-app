@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import HashStr from 'main/db/Hash11'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 
 const itdo: tradeDataObject = {
@@ -15,8 +15,6 @@ const itdo: tradeDataObject = {
   tax: 0,
 }
 
-let ableInsert = true
-
 export const NewAdd = () => {
   const [tdo, setTdo] = useState(itdo)
 
@@ -30,41 +28,29 @@ export const NewAdd = () => {
     })
   }
 
+  const tradesToInsert = (n: number): tradeDataObject[] => {
+    const trades = []
+    for (let i = 0; i < n; i++) {
+      trades.push({
+        ...tdo,
+        quantity: tdo.quantity,
+        price: tdo.price,
+        id: HashStr.hash11(),
+        date: new Date(),
+      })
+    }
+    return trades
+  }
+
   const insert = () => {
-    setTdo({
-      ...tdo,
-      id: HashStr.hash11(),
-      date: new Date(),
-    })
-    window.electronAPI.insert([tdo]).then((data) => {
+    window.electronAPI.insert(tradesToInsert(10)).then(() => {
         console.log("insert reject")
-        console.log(data)
+        window.electronAPI.select().then((data) => {
+          console.log(data)
+        })
     }).catch((err) => {
         console.log(err)
     })
-  }
-
-  const insert2 = () => {
-    if (!ableInsert) return 
-    ableInsert = false
-    window.electronAPI.insert([{
-      id: HashStr.hash11(),
-      date: new Date(),
-      code: 0,
-      tradeType: '現物買',
-      holdType: '一般',
-      quantity: 100,
-      price: 100,
-      fee: 0,
-      tax: 0,
-    }
-    ]).then((data) => {
-      console.log("insert reject")
-      console.log(data)
-      ableInsert = true
-  }).catch((err) => {
-      console.log(err)
-  })
   }
 
   return (
@@ -94,7 +80,7 @@ export const NewAdd = () => {
           setTradeData(tdo.tradeType, tdo.quantity, e.target.value)
         }
       ></input>
-      <button onClick={insert2}>crud</button>
+      <button onClick={insert}>crud</button>
     </div>
   )
 }

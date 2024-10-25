@@ -17,8 +17,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   fileRead: async () => await ipcRenderer.invoke('fileRead'),
   insert: async (tradeDatas: tradeDataObject[]) =>
     await ipcRenderer.invoke('insert', tradeDatas),
-  select: async (id?: number) => ipcRenderer.invoke('select', id),
-  update: async (id: number, tradeData: tradeDataObject) =>
+  select: async (ids?: string[]) => ipcRenderer.invoke('select', ids),
+  update: async (id: string, tradeData: tradeDataObject) =>
     ipcRenderer.invoke('update', id, tradeData),
-  delete: async (id: number) => ipcRenderer.invoke('delete', id),
+  delete: async (ids: string[]) => ipcRenderer.invoke('delete', ids),
 })

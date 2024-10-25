@@ -47,7 +47,7 @@ app.on('ready', () => {
 
   // CRUD
   ipcMain.handle('insert', (_event, tradeDatas: tradeDataObject[]) => {
-    return CRUD.insert(tradeDatas[0])
+    return CRUD.insert(tradeDatas)
   })
   ipcMain.handle('select', () => {
     return CRUD.select()

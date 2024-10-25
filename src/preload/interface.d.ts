@@ -4,9 +4,9 @@ export interface IElectronAPI {
   financeData: (symbol: string, interval: YFOptions) => Promise<YFChartObject[]>
   fileRead: () => Promise<any>
   insert: (tradeDatas: tradeDataObject[]) => Promise<any>
-  select: (id?: number) => Promise<any>
-  update: (id: number, tradeData: tradeDataObject) => Promise<void>
-  delete: (id: number) => Promise<void>
+  select: (id?: string[]) => Promise<any>
+  update: (id: string, tradeData: tradeDataObject) => Promise<void>
+  delete: (ids: string[]) => Promise<void>
 }
 
 declare global {
