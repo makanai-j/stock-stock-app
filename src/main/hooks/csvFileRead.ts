@@ -1,5 +1,6 @@
 import { dialog } from 'electron'
 import { readFileSync } from 'fs'
+// https://github.com/adaltas/node-csv/issues/323
 // eslint-disable-next-line import/no-unresolved
 import { parse } from 'csv-parse/sync'
 import * as Encoding from 'encoding-japanese'
