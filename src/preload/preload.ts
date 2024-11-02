@@ -18,7 +18,7 @@ contextBridge.exposeInMainWorld('crudAPI', {
       throw result
     }
   },
-  select: async (options: tradeFilterOptions) =>
+  select: async (options: SlectFilterOptions) =>
     ipcRenderer.invoke('select', options),
   update: async (tradeData: TradeRecord) => {
     ipcRenderer.invoke('update', tradeData)

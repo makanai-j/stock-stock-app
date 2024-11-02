@@ -10,7 +10,7 @@ import { initialEchartsOption, series, series0 } from './hooks/eChartsOption'
  * @param yfSymbol - 銘柄コード
  * @param yfOption - 足の間隔, 開始・終了日時
  */
-const FinanceChart = ({
+export const FinanceChart = ({
   yfSymbol,
   yfOption,
 }: {
@@ -65,5 +65,3 @@ const FinanceChart = ({
     </div>
   )
 }
-
-export default FinanceChart

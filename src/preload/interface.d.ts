@@ -35,7 +35,7 @@ export interface ICrudAPI {
    * @returns 引数あり - 指定されたidの履歴
    * @returns 引数なし - 全履歴
    */
-  select: (options: tradeFilterOptions) => Promise<TradeRecordFull[]>
+  select: (options: SlectFilterOptions) => Promise<TradeRecordFull[]>
   /**
    * 履歴の変更
    *

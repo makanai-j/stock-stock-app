@@ -8,6 +8,15 @@ export const mainConfig: Configuration = {
    * that runs in the main process.
    */
   entry: './src/main/main.ts',
+
+  output: {
+    publicPath: '/',
+  },
+  devServer: {
+    historyApiFallback: {
+      index: '.webpack/renderer/main_window/index.html',
+    },
+  },
   // Put your normal webpack config below here
   module: {
     rules,

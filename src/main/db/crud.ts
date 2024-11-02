@@ -130,7 +130,7 @@ export class CRUD {
    * 何も指定されていなければ全レコードを返す。
    * @returns レコード
    */
-  static async select(options: tradeFilterOptions): Promise<TradeRecordDB[]> {
+  static async select(options: SlectFilterOptions): Promise<TradeRecordDB[]> {
     let sql = `SELECT 
       t.id, t.date, t.symbol, bp.company, t.trade_type, t.hold_type, t.quantity, t.rest_quantity, t.price, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
       FROM trades AS t

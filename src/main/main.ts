@@ -55,7 +55,7 @@ app.on('ready', () => {
       )
     }
   )
-  ipcMain.handle('select', async (_event, options: tradeFilterOptions) => {
+  ipcMain.handle('select', async (_event, options: SlectFilterOptions) => {
     const trade_records = await CRUD.select(options)
     return trade_records.map((record) => objectToCamelCase(record))
   })

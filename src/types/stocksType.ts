@@ -74,7 +74,7 @@ type trade_data_key =
  * @place 取引所
  * @businessCode 業種コード
  */
-type tradeFilterOptions = {
+type SlectFilterOptions = {
   id?: string
   limit?: number
   filter?: {
