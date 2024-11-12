@@ -1,30 +1,22 @@
-import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import {TradesHistory} from '../TradesHistory'
+import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom'
+import { Header } from './components/Header'
+import { GainAndLoss } from 'renderer/GainAndLoss'
 import { InputTrades } from 'renderer/InputTrades'
+import { TradesHistory } from 'renderer/TradesHistory'
 
-const App = () => {
+export const App = () => {
   return (
-    <div>
-    <Router>
-    <Navbar></Navbar>
-      <Routes>
-        <Route path="/"  Component={TradesHistory} />
-        <Route path="/a" Component={InputTrades} />
-      </Routes>
-    </Router>
-    </div>
-  );
-};
-
-const Navbar = () => {
-    return(
-        <div className="navbar">
-            <ul>
-                <li><Link to={'/'}>R</Link></li>
-                <li><Link to={'/a'}>A</Link></li>
-            </ul>
-        </div>
-    )
+    <main style={{ height: '100vh' }}>
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" Component={GainAndLoss} />
+          <Route path="/history" Component={TradesHistory} />
+          <Route path="/input" Component={InputTrades} />
+        </Routes>
+      </Router>
+    </main>
+  )
 }
 
 export default App

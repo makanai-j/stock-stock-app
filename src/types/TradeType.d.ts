@@ -10,7 +10,7 @@ type HoldType = '一般' | '特定' | 'NISA'
 
 type TradeRecord = {
   id: string
-  date: Date | string | number
+  date: number
   symbol: string
   tradeType: TradeType
   holdType: HoldType
@@ -23,34 +23,38 @@ type TradeRecord = {
 
 type TradeRecordDB = {
   id: string
-  date: Date | string | number
+  date: number
   symbol: string
   trade_type: TradeType
   hold_type: HoldType
   quantity: number
-  rest_quantity?: number
+  rest_quantity: number
   price: number
   fee: number
   tax: number
 }
 
-type TradeRecordFull = {
+type TradeRecordRaw = {
+  holdType: HoldType
+  price: number
+  restQuantity: number
+} & TradeRecordBase
+
+type TradeRecordBase = {
   businessTypeCode: string
   businessTypeName: string
   company: string
+  tradeType: TradeType
   date: Date | string | number
   fee: number
-  holdType: HoldType
   id: string
   market: string
   place: '東証' | '札証' | '福証' | '名証'
   placeYF: '.T' | '.S' | '.F' | '.N'
-  price: number
   quantity: number
   restQuantity: number
   symbol: string
   tax: number
-  tradeType: TradeType
 }
 
 type trade_data_key =
@@ -65,6 +69,9 @@ type trade_data_key =
   | 'tax'
 
 /**
+ * @mode raw: 売り買いの履歴そのまま。gal: 集計。
+ * @id 履歴のid。指定した場合、filterは無視される
+ * @limit 取得するレコードの数
  * @period1 開始日
  * @period2 終了日 指定されなければ、period1 ~ 今日 になる
  * @symbol 銘柄コード
@@ -74,12 +81,15 @@ type trade_data_key =
  * @place 取引所
  * @businessCode 業種コード
  */
-type SlectFilterOptions = {
+type SelectFilterOptions = ModeFilterOptions & BaseFilterOptions
+type ModeFilterOptions = { mode: 'raw' } | { mode: 'gal' }
+type BaseFilterOptions = {
   id?: string
   limit?: number
+  lineUp?: 'ASC' | 'DESC'
   filter?: {
-    period1?: Date | string | number
-    period2?: Date | string | number
+    period1?: number
+    period2?: number
     symbol?: string
     tradeType?: TradeType
     holdType?: HoldType

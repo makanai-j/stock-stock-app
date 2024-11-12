@@ -1,4 +1,4 @@
-import { YFChartObject, YFOptions } from '../types/yfTypes'
+import { YFChartObject, YFOptions } from '../types/YFTypes'
 
 export interface IElectronAPI {
   /**
@@ -22,10 +22,11 @@ export interface ICrudAPI {
    *
    * @param tradeDatas
    * @returns void 正常終了
-   * @throws { faild: string } 返済取引数量が合わない
+   * @throws { failId: string } 返済取引数量が合わない
    * @throws Error その他エラー
    */
   insert: (tradeDatas: TradeRecord[]) => Promise<void>
+
   /**
    * 取引履歴取得
    *
@@ -35,14 +36,20 @@ export interface ICrudAPI {
    * @returns 引数あり - 指定されたidの履歴
    * @returns 引数なし - 全履歴
    */
-  select: (options: SlectFilterOptions) => Promise<TradeRecordFull[]>
+  select: <T extends SelectFilterOptions>(
+    options: T
+  ) => T extends { mode: 'raw' }
+    ? Promise<TradeRecordRaw[]>
+    : Promise<TradeRecordGAL[]>
+
   /**
    * 履歴の変更
    *
    * @param tradeData 変更したデータ
    * @returns
    */
-  update: (tradeData: TradeRecord) => Promise<void>
+  update: (trades: TradeRecord[]) => Promise<void>
+
   /**
    * 履歴の削除
    *

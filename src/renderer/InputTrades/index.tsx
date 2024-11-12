@@ -1,19 +1,21 @@
-import HashStr from './hooks/Hash11'
 import { AddRecordBar } from './components/AddRecordBar'
 import {
-  TradesProvider,
+  InputTradesProvider,
   useInputTrades,
   useInputTradesDispatch,
 } from './InputTradesContext'
 import { useState } from 'react'
+import { QuarterPicker } from 'renderer/MyMui/QuarterPicker'
+import { BaseDatePicker } from 'renderer/MyMui/BaseDatePicker'
+import { MyDateTimePicker } from 'renderer/MyMui'
 
 export const InputTrades = () => {
   return (
-    <div>
-      <TradesProvider>
+    <>
+      <InputTradesProvider>
         <NewAddChild></NewAddChild>
-      </TradesProvider>
-    </div>
+      </InputTradesProvider>
+    </>
   )
 }
 
@@ -50,7 +52,7 @@ const NewAddChild = () => {
         console.log('insert resolve')
         dispach && dispach({ type: 'reset' })
         setAbleInsert(true)
-        window.crudAPI.select({}).then((data) => {
+        window.crudAPI.select({ mode: 'raw' }).then((data) => {
           console.log(data)
         })
       })
@@ -65,6 +67,26 @@ const NewAddChild = () => {
 
   return (
     <div>
+      <QuarterPicker />
+      <MyDateTimePicker format="YYYY/M/D H:m" />
+      <BaseDatePicker
+        format="YYYY/M"
+        formatDensity="spacious"
+        views={['year', 'month']}
+        slotProps={{
+          calendarHeader: { format: 'YYYY/M' },
+        }}
+      />
+      <BaseDatePicker
+        format="YYYY"
+        formatDensity="spacious"
+        closeOnSelect={true}
+        // calendar header を表示するために2つ入れる
+        views={['year', 'year']}
+        slotProps={{
+          calendarHeader: { format: 'YYYY' },
+        }}
+      />
       {tradeGroups?.map((trades) =>
         trades.map((trade, index) => {
           return (

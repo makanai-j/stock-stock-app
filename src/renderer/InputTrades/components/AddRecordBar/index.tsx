@@ -28,7 +28,10 @@ export const AddRecordBar = ({
         -
       </button>
 
-      {/** datetime */}
+      {/**
+       * datetime
+       * numberで保存することで、sqlとjsでの違いをなくす
+       */}
       <ShowOnFirstIndex text={formatToDateTime(trade.date)} index={index}>
         <input
           type="datetime-local"
@@ -37,7 +40,7 @@ export const AddRecordBar = ({
             dispach &&
             dispach({
               type: 'update',
-              trade: { ...trade, date: e.target.value },
+              trade: { ...trade, date: new Date(e.target.value).getTime() },
             })
           }
         />
@@ -66,7 +69,7 @@ export const AddRecordBar = ({
             dispach &&
             dispach({
               type: 'update',
-              trade: { ...trade, tradeType: e.target.value },
+              trade: { ...trade, tradeType: e.target.value as TradeType },
             })
           }
         >
@@ -121,7 +124,7 @@ export const AddRecordBar = ({
             dispach &&
             dispach({
               type: 'update',
-              trade: { ...trade, holdType: e.target.value },
+              trade: { ...trade, holdType: e.target.value as HoldType },
             })
           }
         >

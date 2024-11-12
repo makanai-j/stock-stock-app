@@ -29,7 +29,7 @@ function isTradeRecordCamel(record: any): record is TradeRecord {
   )
 }
 
-function isTradeRecordSnake(record: any): record is TradeRecord {
+function isTradeRecordSnake(record: any): record is TradeRecordDB {
   return (
     record.id !== undefined &&
     record.date !== undefined &&

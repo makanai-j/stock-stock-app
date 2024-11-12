@@ -1,0 +1,73 @@
+.tade-history-container {
+    overflow-x: auto;
+}
+
+/* 横スクロールバーを非表示 */
+.tade-history-container::-webkit-scrollbar {
+    height: 0;
+}
+
+.table-container {
+    height: calc(100vh - 62px);
+    scrollbar-width: thin;
+    direction: rtl;
+    border-right: 1px solid #eee;
+    background-color: #222244;
+    border: 0;
+}
+
+/*スクロールバー非表示（Chrome・Safari）*/
+.table-container::-webkit-scrollbar-thumb {
+    background-image: linear-gradient(180deg, #D0368A 0%, #708AD4 99%);
+    box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
+    border-radius: 100px;
+}
+
+.charts-outer {
+    color: white;
+    width: calc(100vw - 300px);
+    height: calc(100vh - 38px);
+    background-color: #2D2B55;
+}
+
+.trades-info {
+    height: 150px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.trades-info table {
+    border-spacing: 0;
+}
+
+.trades-info th {
+    padding: 0;
+    background-color: #1E1E3F;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.trades-info td {
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.trades-info th,
+.trades-info td {
+    padding: 2px 4px;
+    width: fit-content;
+    white-space: nowrap;
+}
+
+.interval-select-outer {
+    height: 150px;
+}
+
+.interval-select {
+    color: white;
+    background-color: #547;
+    font-size: 12px;
+    height: 18px;
+    margin-left: 10px;
+    border: 0;
+}

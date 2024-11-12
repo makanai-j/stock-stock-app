@@ -12,18 +12,22 @@ contextBridge.exposeInMainWorld('crudAPI', {
      * メインプロセスからのエラーはelectronによってラップされ、
      * カスタムエラーを返すことができない。
      * なので、特定のオブジェクトをかえし、レンダラーで判断するしかない。
+     * ここでは
+     * {failId: string}
+     * というオブジェクトを返している
      */
     const result = await ipcRenderer.invoke('insert', tradeDatas)
     if (isRejectedPromise(result)) {
       throw result
     }
   },
-  select: async (options: SlectFilterOptions) =>
-    ipcRenderer.invoke('select', options),
-  update: async (tradeData: TradeRecord) => {
-    ipcRenderer.invoke('update', tradeData)
+  select: (options: SelectFilterOptions) => {
+    return ipcRenderer.invoke('select', options)
   },
-  delete: async (ids: string[]) => ipcRenderer.invoke('delete', ids),
+  update: (trades: TradeRecord) => {
+    ipcRenderer.invoke('update', trades)
+  },
+  delete: (ids: string[]) => ipcRenderer.invoke('delete', ids),
 })
 
 const isRejectedPromise = (response: any) => {

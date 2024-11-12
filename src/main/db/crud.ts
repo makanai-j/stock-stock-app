@@ -74,11 +74,12 @@ export class CRUD {
 
         let repayQuant = repayTrade.quantity
         const tradesToUpdate: TradeRecordDB[] = []
+        const linksParams: (string | number)[] = []
 
         for (const row of rows) {
           if (repayQuant === 0) break
 
-          let rowRestQuantity = row.rest_quantity as number
+          let rowRestQuantity = row.rest_quantity
 
           if (rowRestQuantity >= repayQuant) {
             rowRestQuantity -= repayQuant
@@ -92,6 +93,12 @@ export class CRUD {
             ...row,
             rest_quantity: rowRestQuantity,
           })
+
+          linksParams.push(
+            row.id,
+            repayTrade.id,
+            row.rest_quantity - rowRestQuantity
+          )
         }
 
         if (repayQuant)
@@ -100,17 +107,12 @@ export class CRUD {
             '所有株数に対して返済取引の数が合っていません'
           )
 
-        console.log('to update', tradesToUpdate)
-        //await CRUD.update(tradesToUpdate)
         await CRUD.update(tradesToUpdate, ['rest_quantity'])
 
         // trade_links で紐づけ
-        const insertLinksSql = `INSERT INTO trade_links (new_trade_id, repay_trade_id) VALUES ${tradesToUpdate.map(() => '(?,?)').join(',')}`
-        const insertLinksPrams = tradesToUpdate.flatMap((trade) => [
-          trade.id,
-          repayTrade.id,
-        ])
-        executeNonQuery(insertLinksSql, insertLinksPrams)
+        const insertLinksSql = `INSERT INTO trade_links (new_trade_id, repay_trade_id, trade_quantity) VALUES ${tradesToUpdate.map(() => '(?,?,?)').join(',')}`
+
+        executeNonQuery(insertLinksSql, linksParams)
 
         await _insert([repayTrade])
       }
@@ -130,27 +132,43 @@ export class CRUD {
    * 何も指定されていなければ全レコードを返す。
    * @returns レコード
    */
-  static async select(options: SlectFilterOptions): Promise<TradeRecordDB[]> {
-    let sql = `SELECT 
-      t.id, t.date, t.symbol, bp.company, t.trade_type, t.hold_type, t.quantity, t.rest_quantity, t.price, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
-      FROM trades AS t
-      LEFT JOIN brand_profiles AS bp ON t.symbol = bp.id
-      LEFT JOIN market_places AS mp ON bp.market_id = mp.id
-      LEFT JOIN business_type_33 AS bt ON bp.business_id = bt.id
-       WHERE 1=1 ` // 1=1について https://qiita.com/seiya2130/items/a34f5492592b103e2545
-
+  static async select(options: SelectFilterOptions): Promise<any[]> {
+    let sql = ''
     const params: any[] = []
+
+    if (options.mode == 'raw') {
+      sql = `SELECT 
+      t.id, t.date, t.symbol, bp.company, t.trade_type, t.hold_type, t.quantity, t.rest_quantity, t.price, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
+      FROM trades AS t `
+    } else {
+      sql = `SELECT 
+      t.id, t.date, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, (t.price - COALESCE(nt.price, 0)) as gal, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
+      FROM (select * from trades WHERE trade_type IN (?, ?, ?)) as t
+      LEFT JOIN trade_links AS tl ON t.id = tl.repay_trade_id
+      LEFT JOIN trades AS nt ON tl.new_trade_id = nt.id `
+      params.push('現物売', '信用返済買', '信用返済売')
+    }
+
+    sql += ` LEFT JOIN brand_profiles AS bp ON t.symbol = bp.id
+    LEFT JOIN market_places AS mp ON bp.market_id = mp.id
+    LEFT JOIN business_type_33 AS bt ON bp.business_id = bt.id
+    WHERE 1=1 ` // 1=1について https://qiita.com/seiya2130/items/a34f5492592b103e2545
+
     if (options.id) {
-      sql += ` AND (t.id = ? OR
+      if (options.mode == 'raw') {
+        sql += ` AND (t.id = ? OR
           t.id IN (SELECT tl.new_trade_id FROM trade_links AS tl WHERE tl.repay_trade_id = ?) OR 
           t.id IN (SELECT tl.repay_trade_id FROM trade_links AS tl WHERE tl.new_trade_id = ?))`
-      params.push(options.id, options.id, options.id)
+        params.push(options.id, options.id, options.id)
+      } else {
+        sql += ` AND t.id = ?`
+        params.push(options.id)
+      }
     } else {
       if (options.filter?.period1) {
         sql += ` AND t.date >= ?`
         params.push(options.filter?.period1)
       }
-
       if (options.filter?.period2) {
         sql += ` AND t.date <= ?`
         params.push(options.filter?.period2)
@@ -192,7 +210,8 @@ export class CRUD {
         params.push(options.filter?.businessCode)
       }
     }
-    sql += ` ORDER BY t.date ASC ${options.limit ? `LIMIT ${options.limit}` : ''}`
+
+    sql += ` ORDER BY t.date ${options.lineUp ? options.lineUp : 'ASC'} ${options.limit ? `LIMIT ${options.limit}` : ''}`
 
     return await executeSelectQuery(sql, params)
   }

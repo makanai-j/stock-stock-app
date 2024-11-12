@@ -1,11 +1,19 @@
 import { createContext, useContext, useReducer, Dispatch } from 'react'
 import HashStr from './hooks/Hash11'
 
+type InputTradesAction =
+  | { type: 'push'; trade: TradeRecord }
+  | { type: 'pushInGroup'; id: string }
+  | { type: 'add' }
+  | { type: 'delete'; id: string }
+  | { type: 'update'; trade: TradeRecord }
+  | { type: 'reset' }
+
 const InputTradesContext = createContext<TradeRecord[][] | null>(null)
+const InputTradesDispachContext =
+  createContext<Dispatch<InputTradesAction> | null>(null)
 
-const InputTradesDispachContext = createContext<Dispatch<any> | null>(null)
-
-export function TradesProvider({ children }: { children: any }) {
+export function InputTradesProvider({ children }: { children: any }) {
   const [inputTrades, dispach] = useReducer(
     InputTradesReducer,
     [] as TradeRecord[][]
@@ -29,7 +37,7 @@ export const useInputTradesDispatch = () =>
 
 function InputTradesReducer(
   tradeGroups: TradeRecord[][],
-  action: any
+  action: InputTradesAction
 ): TradeRecord[][] {
   switch (action.type) {
     case 'push':
@@ -76,7 +84,7 @@ function InputTradesReducer(
 const initializeTrade = (): TradeRecord => {
   return {
     id: HashStr.randCode(),
-    date: new Date(),
+    date: new Date().getTime(),
     symbol: '',
     tradeType: '現物買',
     holdType: '一般',

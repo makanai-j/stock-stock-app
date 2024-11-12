@@ -2,16 +2,13 @@ import sqlite3 from 'sqlite3'
 const db = new sqlite3.Database('./stock.db')
 
 import { brandProfilesSql, businessTypeSql, marketPlacesSql } from './sql'
-import { create } from 'lodash'
-
-db.run('drop table if exists trades')
 
 const tradeTables = [
   {
     name: 'trades',
     query: `CREATE TABLE IF NOT EXISTS trades (
       id TEXT PRIMARY KEY,
-      date TEXT NOT NULL,
+      date INTEGER NOT NULL,
       symbol TEXT NOT NULL, -- 銘柄コード 7203
       trade_type TEXT NOT NULL, -- 現物買,信用新規買...
       hold_type TEXT NOT NULL, -- 一般, 特定, NISA
@@ -26,8 +23,9 @@ const tradeTables = [
     name: 'trade_links',
     query: `CREATE TABLE IF NOT EXISTS trade_links (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      new_trade_id TEXT, -- 新規取引
-      repay_trade_id TEXT -- 返済取引
+      new_trade_id TEXT NOT NULL, -- 新規取引
+      repay_trade_id TEXT NOT NULL, -- 返済取引
+      trade_quantity INTEGER NOT NULL -- 取引数量
     )`,
   },
 ]
