@@ -40,19 +40,17 @@
 }
 
 /* Time scroll bar */
-.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root
-  ul {
+.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
   width: 40px;
 }
 
 .css-ux17pc-MuiButtonBase-root-MuiMenuItem-root-MuiMultiSectionDigitalClockSection-item {
   width: 36px;
-  padding: 0;
+  padding: 10px;
   margin: 2px;
 }
 
-.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root
-  ul {
+.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
   height: 310px;
   overflow-y: scroll;
   /* IE, Edge 対応 */
@@ -62,9 +60,7 @@
 }
 
 /* Chrome, Safari 対応 */
-.MuiMultiSectionDigitalClock-root
-  css-8fykvn-MuiMultiSectionDigitalClock-root
-  ul {
+.MuiMultiSectionDigitalClock-root css-8fykvn-MuiMultiSectionDigitalClock-root ul {
   display: none;
 }
 
@@ -115,4 +111,12 @@ DayCalendar dayButton
 /* textfield calendar button */
 .css-oeq6yz-MuiButtonBase-root-MuiIconButton-root {
   padding: 3px;
+}
+
+.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 0;
+}
+
+.css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 0;
 }

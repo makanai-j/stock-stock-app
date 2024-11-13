@@ -4,6 +4,7 @@ import FeaturedPlayListOutlinedIcon from '@mui/icons-material/FeaturedPlayListOu
 import './index.css'
 import { IconButton } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { IconButtonNormal } from 'renderer/MyMui'
 
 export const Header = () => {
   return (
@@ -40,13 +41,13 @@ export const Header = () => {
 
 const HeaderButton = ({ children }: { children: any }) => {
   return (
-    <IconButton
+    <IconButtonNormal
       size="small"
       sx={{
         color: '#ccf',
       }}
     >
       {children}
-    </IconButton>
+    </IconButtonNormal>
   )
 }

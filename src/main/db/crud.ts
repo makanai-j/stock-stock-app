@@ -211,7 +211,7 @@ export class CRUD {
       }
     }
 
-    sql += ` ORDER BY t.date ${options.lineUp ? options.lineUp : 'ASC'} ${options.limit ? `LIMIT ${options.limit}` : ''}`
+    sql += ` ORDER BY t.date ${options.order ? options.order : 'ASC'} ${options.limit ? `LIMIT ${options.limit}` : ''}`
 
     return await executeSelectQuery(sql, params)
   }

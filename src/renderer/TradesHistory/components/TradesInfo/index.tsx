@@ -3,7 +3,6 @@ import {
   formatToTime,
 } from 'renderer/TradesHistory/hooks/formatToTime'
 import { priceFormatter } from 'renderer/hooks/priceFormatter'
-import 'simplebar/dist/simplebar.css'
 
 export const TradesInfo = ({ trades }: { trades: TradeRecordRaw[] }) => {
   return (

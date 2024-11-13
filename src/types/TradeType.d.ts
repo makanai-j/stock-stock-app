@@ -86,7 +86,7 @@ type ModeFilterOptions = { mode: 'raw' } | { mode: 'gal' }
 type BaseFilterOptions = {
   id?: string
   limit?: number
-  lineUp?: 'ASC' | 'DESC'
+  order?: 'ASC' | 'DESC'
   filter?: {
     period1?: number
     period2?: number

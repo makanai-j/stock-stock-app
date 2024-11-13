@@ -3,7 +3,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker'
 import { Dayjs } from 'dayjs'
-import MyTextField from './MyTextFIeld'
+import { DateTextField } from './DateTextFIeld'
 import './style.css'
 import { StyledEngineProvider } from '@mui/material/styles'
 
@@ -23,7 +23,7 @@ export const BaseDatePicker = React.forwardRef(
               ...props.slotProps,
               field: { shouldRespectLeadingZeros: true },
             }}
-            slots={{ ...props.slots, textField: MyTextField }}
+            slots={{ ...props.slots, textField: DateTextField }}
           />
         </LocalizationProvider>
       </StyledEngineProvider>

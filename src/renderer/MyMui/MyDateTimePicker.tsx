@@ -1,5 +1,5 @@
 import './style.css'
-import MyTextField from './MyTextFIeld'
+import { DateTextField } from './DateTextFIeld'
 import {
   DateTimePicker,
   DateTimePickerProps,
@@ -24,7 +24,7 @@ export const MyDateTimePicker = React.forwardRef(
               actionBar: { actions: [] },
               calendarHeader: { format: 'YYYY / M' },
             }}
-            slots={{ textField: MyTextField }}
+            slots={{ textField: DateTextField }}
           />
         </LocalizationProvider>
       </StyledEngineProvider>

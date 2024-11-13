@@ -9,15 +9,28 @@ type InputTradesAction =
   | { type: 'update'; trade: TradeRecord }
   | { type: 'reset' }
 
-const InputTradesContext = createContext<TradeRecord[][] | null>(null)
+const initializeTrade = (): TradeRecord => {
+  return {
+    id: HashStr.randCode(),
+    date: new Date().getTime(),
+    symbol: '',
+    tradeType: '現物買',
+    holdType: '一般',
+    quantity: 0,
+    price: 0,
+    fee: 0,
+    tax: 0,
+  }
+}
+
+const InputTradesContext = createContext<TradeRecord[][]>([])
 const InputTradesDispachContext =
   createContext<Dispatch<InputTradesAction> | null>(null)
 
 export function InputTradesProvider({ children }: { children: any }) {
-  const [inputTrades, dispach] = useReducer(
-    InputTradesReducer,
-    [] as TradeRecord[][]
-  )
+  const [inputTrades, dispach] = useReducer(InputTradesReducer, [
+    [initializeTrade()],
+  ])
 
   return (
     <div>
@@ -26,7 +39,6 @@ export function InputTradesProvider({ children }: { children: any }) {
           {children}
         </InputTradesDispachContext.Provider>
       </InputTradesContext.Provider>
-      <button onClick={() => console.log(inputTrades)}>log</button>
     </div>
   )
 }
@@ -76,21 +88,6 @@ function InputTradesReducer(
         return trades
       })
     case 'reset':
-      return []
-  }
-  return tradeGroups
-}
-
-const initializeTrade = (): TradeRecord => {
-  return {
-    id: HashStr.randCode(),
-    date: new Date().getTime(),
-    symbol: '',
-    tradeType: '現物買',
-    holdType: '一般',
-    quantity: 100,
-    price: 0,
-    fee: 0,
-    tax: 0,
+      return [[initializeTrade()]]
   }
 }

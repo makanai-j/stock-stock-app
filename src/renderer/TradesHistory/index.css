@@ -1,31 +1,25 @@
-.tade-history-container {
-    overflow-x: auto;
+.trade-history-container {
+    height: calc(100vh - 38px);
+    overflow: hidden;
 }
 
-/* 横スクロールバーを非表示 */
-.tade-history-container::-webkit-scrollbar {
+/* スクロールバーを非表示 */
+.trade-history-container::-webkit-scrollbar {
     height: 0;
+    width: 0;
 }
 
 .table-container {
     height: calc(100vh - 62px);
-    scrollbar-width: thin;
     direction: rtl;
-    border-right: 1px solid #eee;
     background-color: #222244;
     border: 0;
-}
-
-/*スクロールバー非表示（Chrome・Safari）*/
-.table-container::-webkit-scrollbar-thumb {
-    background-image: linear-gradient(180deg, #D0368A 0%, #708AD4 99%);
-    box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
-    border-radius: 100px;
+    overflow: auto;
 }
 
 .charts-outer {
     color: white;
-    width: calc(100vw - 300px);
+    width: calc(100vw - 302px);
     height: calc(100vh - 38px);
     background-color: #2D2B55;
 }
@@ -33,7 +27,6 @@
 .trades-info {
     height: 150px;
     overflow: auto;
-    scrollbar-width: thin;
 }
 
 .trades-info table {

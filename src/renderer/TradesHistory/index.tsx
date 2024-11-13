@@ -9,8 +9,8 @@ import {
 import { FinanceChart } from './components/FinanceCharts'
 import { HistoryList } from './components/HistoryList'
 import { usableInterval } from './hooks/usableInterval'
-import './index.css'
 import { TradesInfo } from './components/TradesInfo'
+import './index.css'
 
 /**
  * 履歴画面のページ
@@ -20,8 +20,8 @@ export const TradesHistory = () => {
     <TradesHistoryProvider>
       <YFOptionsProvider>
         <div
-          className="tade-history-container"
-          style={{ display: 'flex', width: '100%', overflowX: 'scroll' }}
+          className="trade-history-container"
+          style={{ display: 'flex', width: '100%' }}
         >
           <HistoryList></HistoryList>
           <Chart></Chart>

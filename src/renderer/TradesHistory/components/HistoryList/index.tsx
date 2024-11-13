@@ -25,10 +25,7 @@ import {
   useYFOptionsDispatch,
 } from 'renderer/TradesHistory/YFOptionsContext'
 import { priceFormatter } from 'renderer/hooks/priceFormatter'
-import 'simplebar/dist/simplebar.css'
-import zIndex from '@mui/material/styles/zIndex'
 import { BaseDatePicker } from 'renderer/MyMui'
-import MyTextField from 'renderer/MyMui/MyTextFIeld'
 
 const stickyStyles = {
   header: [
@@ -103,9 +100,10 @@ export const HistoryList = () => {
 
   useEffect(() => {
     window.crudAPI
-      .select({ limit: 1, mode: 'raw', lineUp: 'DESC' })
+      .select({ limit: 1, mode: 'raw', order: 'DESC' })
       .then((trades) => {
         if (trades.length) {
+          console.log(trades)
           setChartsTrades(trades[0].id)
           setListPeriod(trades[0].date)
         }
@@ -236,6 +234,7 @@ export const HistoryList = () => {
                         : '#222244',
                     '&.MuiTableRow-root:hover': {
                       backgroundColor: '#2D2B55',
+                      cursor: 'pointer',
                     },
                   }}
                   onClick={() => setChartsTrades(trade.id)}
