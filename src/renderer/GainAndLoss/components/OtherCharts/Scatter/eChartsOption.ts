@@ -1,8 +1,46 @@
+const splitLine = {
+  lineStyle: {
+    width: 0.5,
+    color: 'rgba(255,255,255,0.4)',
+  },
+}
+
+export const markLineOpt = {
+  animation: false,
+  label: {
+    align: 'right',
+  },
+  lineStyle: {
+    color: '#ccf',
+    type: 'solid',
+  },
+  tooltip: {
+    show: false,
+  },
+  data: [[]],
+}
+
 export const scatterOption = {
+  grid: {
+    top: 10,
+    bottom: 15,
+    left: 50,
+    borderWidth: 0,
+  },
   xAxis: {
     axisLabel: {
       show: false,
     },
+    axisLine: {
+      lineStyle: {
+        width: 0.5,
+        color: 'white',
+      },
+    },
+    axisTick: {
+      show: false,
+    },
+    splitLine,
     scale: true,
   },
   yAxis: {
@@ -10,6 +48,7 @@ export const scatterOption = {
       fontSize: '8px',
       color: 'white',
     },
+    splitLine,
     scale: true,
   },
   tooltip: {
@@ -20,7 +59,6 @@ export const scatterOption = {
       _elRect: any,
       size: { contentSize: number[]; viewSize: number[] }
     ) {
-      console.log(pos)
       const obj: { [position: string]: number } = {}
       if (pos[1] < size.viewSize[1] / 2) obj.top = pos[1] - 10
       else obj.top = pos[1] - size.contentSize[1]
@@ -31,6 +69,7 @@ export const scatterOption = {
     },
     formatter: (params: any) => {
       if (!params) return
+      console.log(params.value)
 
       let dataStr = `<div>${params.marker}${params.seriesName}</div>`
 
@@ -69,11 +108,6 @@ export const scatterOption = {
       })
       return dataStr
     },
-  },
-  grid: {
-    top: 10,
-    bottom: 15,
-    left: 50,
   },
   series: [
     {

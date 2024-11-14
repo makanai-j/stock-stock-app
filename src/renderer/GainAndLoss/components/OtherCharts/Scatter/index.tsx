@@ -1,6 +1,7 @@
 import * as echarts from 'echarts'
 import { useEffect, useRef } from 'react'
-import { scatterOption } from './eChartsOption'
+import { markLineOpt, scatterOption } from './eChartsOption'
+import { correlation } from '../datas/correlation'
 
 export const Scatter = ({
   data,
@@ -14,7 +15,41 @@ export const Scatter = ({
   const chartRef = useRef<HTMLDivElement>(null)
   let myCharts: echarts.ECharts
   useEffect(() => {
-    console.log(data)
+    const { r, m, b } = correlation(data)
+
+    const maxX = Math.max(...data.map((d) => d[0]))
+    const minX = Math.min(...data.map((d) => d[0]))
+    const maxY = Math.max(...data.map((d) => d[1]))
+    const minY = Math.min(...data.map((d) => d[1]))
+
+    let x1 = minX
+    let x2 = maxX
+    let y1 = m * minX + b
+    let y2 = m * maxX + b
+    if (r > 0) {
+      if (y1 < minY) {
+        x1 = (minY - b) / m
+        y1 = minY
+      }
+      if (y2 > maxY) {
+        x2 = (maxY - b) / m
+        y2 = maxY
+      }
+    } else {
+      if (y1 > maxY) {
+        x1 = (maxY - b) / m
+        y1 = maxY
+      }
+      if (y2 < minY) {
+        x2 = (minY - b) / m
+        y2 = minY
+      }
+    }
+
+    const point1 = [x1, y1]
+    const point2 = [x2, y2]
+
+    console.log(point1, point2)
     myCharts = echarts.init(chartRef.current)
     myCharts?.setOption({
       ...scatterOption,
@@ -23,6 +58,24 @@ export const Scatter = ({
         ...scatterOption.series[0],
         name: title,
         data,
+        markLine: {
+          ...markLineOpt,
+          // tooltip: {
+          //   formatter: `y = ${m.toExponential(2)} * x + ${b.toExponential(2)}`,
+          // },
+          data: [
+            [
+              {
+                coord: point1,
+                symbol: 'none',
+              },
+              {
+                coord: point2,
+                symbol: 'none',
+              },
+            ],
+          ],
+        },
       },
     })
   }, [data])
