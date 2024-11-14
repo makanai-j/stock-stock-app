@@ -1,0 +1,58 @@
+.gal-list-container {
+    width: 100vw;
+    color: white;
+    position: absolute;
+    top: 72px;
+    backdrop-filter: blur(20px);
+    z-index: 6;
+    overflow-y: visible;
+}
+
+.gal-list-container-show {
+    height: calc(100vh - 72px);
+    transition: 200ms height ease;
+    overflow-x: scroll;
+}
+
+.gal-list-container-hidden {
+    height: 0;
+    transition: 200ms height ease;
+    overflow-x: hidden;
+}
+
+
+.gal-list-container table {
+    width: 100vw;
+    position: absolute;
+    border-spacing: 0;
+    overflow: scroll;
+}
+
+.gal-list-container table .dark {}
+
+
+.gal-list-container table .light {
+    background-color: rgba(200, 200, 250, 0.1);
+}
+
+
+
+.gal-list-container th {
+    padding: 0;
+    background-color: #1E1E3F;
+    backdrop-filter: blur(10px);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.gal-list-container td {
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.gal-list-container th,
+.gal-list-container td {
+    padding: 2px 4px;
+    width: fit-content;
+    white-space: nowrap;
+}

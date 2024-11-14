@@ -18,18 +18,18 @@ export const usableInterval = <T>(
   const daysBetweenP1P2 = getDaysSince(period1, period2)
 
   // 期間：8日 過去：30日前
-  if (daysSinceP1 < 29 && daysBetweenP1P2 < 7) {
+  if (daysSinceP1 < 30 && daysBetweenP1P2 < 8) {
     intervals.push('1m')
   }
 
   // 期間：60日 過去：60日前
-  if (daysSinceP1 < 59 && daysBetweenP1P2 < 59) {
+  if (daysSinceP1 < 60 && daysBetweenP1P2 < 60) {
     intervals.push('2m', '5m', '15m', '30m', '90m')
   }
 
   // 期間：730日 過去：730日前
-  if (daysSinceP1 < 729 && daysBetweenP1P2 < 729) {
-    intervals.push('60m', '1h')
+  if (daysSinceP1 < 730 && daysBetweenP1P2 < 730) {
+    intervals.push('1h')
   }
 
   intervals.push('1d', '5d', '1wk', '1mo', '3mo')

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 //import { isIntervalString, YFOptions } from '../../types/yfTypes'
-import { useTradesHistory, TradesHistoryProvider } from './TradesHistoryContext'
+import {
+  useSelectedTrades,
+  SelectedTradesProvider,
+} from './SelectedTradesContext'
 import {
   useYFOptions,
   useYFOptionsDispatch,
@@ -11,13 +14,15 @@ import { HistoryList } from './components/HistoryList'
 import { usableInterval } from './hooks/usableInterval'
 import { TradesInfo } from './components/TradesInfo'
 import './index.css'
+import { MySelect } from 'renderer/MyMui'
+import { MenuItem, SelectChangeEvent } from '@mui/material'
 
 /**
  * 履歴画面のページ
  */
 export const TradesHistory = () => {
   return (
-    <TradesHistoryProvider>
+    <SelectedTradesProvider>
       <YFOptionsProvider>
         <div
           className="trade-history-container"
@@ -27,12 +32,12 @@ export const TradesHistory = () => {
           <Chart></Chart>
         </div>
       </YFOptionsProvider>
-    </TradesHistoryProvider>
+    </SelectedTradesProvider>
   )
 }
 
 const Chart = () => {
-  const trades = useTradesHistory()
+  const trades = useSelectedTrades()
   const yfOptions = useYFOptions()
   const yfOptionsDispatch = useYFOptionsDispatch()
 
@@ -40,7 +45,7 @@ const Chart = () => {
   const period2 = () =>
     trades?.length ? new Date(trades[trades.length - 1].date) : new Date()
 
-  const setIntervalYfOption = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const setIntervalYfOption = (e: SelectChangeEvent<unknown>) => {
     if (trades?.length) {
       yfOptionsDispatch &&
         yfOptionsDispatch({
@@ -54,12 +59,14 @@ const Chart = () => {
     }
   }
 
+  console.log(yfOptions)
+
   return (
     <div>
       {trades?.length ? (
         <div className="charts-outer">
           <TradesInfo trades={trades} />
-          <select
+          <MySelect
             className="interval-select"
             value={yfOptions?.interval}
             onChange={setIntervalYfOption}
@@ -67,12 +74,12 @@ const Chart = () => {
             {Object.keys(intervalMap).map(
               (key) =>
                 usableInterval<string>(period1(), period2()).includes(key) && (
-                  <option value={key} key={key}>
+                  <MenuItem value={key} key={key}>
                     {intervalMap[key]}
-                  </option>
+                  </MenuItem>
                 )
             )}
-          </select>
+          </MySelect>
           <FinanceChart />
         </div>
       ) : (

@@ -8,9 +8,11 @@ const grid = [
   {
     left: 10,
     right: 10,
-    top: 15,
-    bottom: 5,
+    top: 20,
+    bottom: 2,
     containLabel: true,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    borderWidth: 0,
   },
 ]
 const yAxis = [
@@ -18,6 +20,12 @@ const yAxis = [
     type: 'value',
     axisLabel: {
       fontSize: 10,
+      color: 'white',
+    },
+    splitLine: {
+      lineStyle: {
+        width: 0.3,
+      },
     },
     axisPointer: {
       show: false,
@@ -65,6 +73,7 @@ export const xAxis0 = {
   },
   axisLabel: {
     align: 'center',
+    color: 'white',
     fontSize: 9,
     interval: (_: number, value: string) => {
       return value != ''

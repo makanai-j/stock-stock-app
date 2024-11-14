@@ -11,10 +11,12 @@ export const DateTextField = React.forwardRef(
           ...props.sx,
           '& .MuiInputBase-input': {
             fontSize: 13,
+            fontWeight: 200,
             width: '120px',
             height: '24px',
             padding: 1,
           },
+          fontWeight: 200,
           backgroundColor: 'rgba(100,100,200,0.3)',
           borderRadius: 0,
           input: {

@@ -51,11 +51,13 @@ const getProperOptions = (options: YFOptions): YFOptions => {
   const period2 = options.period2 ? new Date(options.period2) : new Date()
   const today = new Date()
 
+  console.log(options)
+
   if (period1.getTime() > period2.getTime())
-    period2.setFullYear(
+    period1.setFullYear(
       period1.getFullYear(),
       period1.getMonth(),
-      period1.getDate() + 3
+      period1.getDate() - 3
     )
 
   // 挿入可能全日数
@@ -77,9 +79,9 @@ const getProperOptions = (options: YFOptions): YFOptions => {
   }
 
   const setDays = (days: number, past: number) => {
-    addAbleDays = days - getDaysSince(period1, period2)
-    addAblePast = past - getDaysSince(period1, today)
-    addAbleFuture = getDaysSince(period2, today)
+    addAbleDays = days - (getDaysSince(period1, period2) + 1)
+    addAblePast = past - (getDaysSince(period1, today) + 1)
+    addAbleFuture = getDaysSince(period2, today) + 1
   }
 
   // intervalの制限確認
@@ -92,18 +94,20 @@ const getProperOptions = (options: YFOptions): YFOptions => {
 
   // 期間：8日 過去：30日前
   if (interval === '1m') {
-    setDays(7, 29)
+    setDays(8, 30)
+    console.log(addAbleDays, addAblePast, addAbleFuture)
+    console.log(getDaysSince(period1, period2))
 
     // 期間：60日 過去：60日前
   } else if (['2m', '5m', '15m', '30m', '90m'].includes(interval)) {
-    setDays(59, 59)
+    setDays(60, 60)
 
     // 前後に入れる日数の最大値
     maxBeforeAndAfter = ['2m', '5m', '15m'].includes(interval) ? 2 : 7
 
     // 期間：730日 過去：730日前
   } else if (['60m', '1h'].includes(interval)) {
-    setDays(729, 729)
+    setDays(730, 730)
 
     // 前後に入れる日数の最大値
     maxBeforeAndAfter = 7

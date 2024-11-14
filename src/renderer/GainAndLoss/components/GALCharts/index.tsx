@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { useGAL } from 'renderer/GainAndLoss/GALContext'
 import {
@@ -19,6 +19,16 @@ export const GALChart = () => {
   const chartRef = useRef<HTMLDivElement>(null)
   const tradesGAL = useGAL()
   const eChartsOption = useEChartsOption()
+  let myCharts: echarts.ECharts
+
+  const getOtherHeight = () => {
+    let h = window.innerHeight * 0.31
+    if (h > 200) h = 200
+    else if (h < 130) h = 130
+    return h + 72
+  }
+
+  const [otherChartsHeight, setHeight] = useState(getOtherHeight())
 
   useEffect(() => {
     console.log('create chart')
@@ -30,7 +40,7 @@ export const GALChart = () => {
       yAxisData0: [],
     }
 
-    const myCharts = echarts.init(chartRef.current)
+    myCharts = echarts.init(chartRef.current)
     if (tradesGAL && eChartsOption)
       eChartsData = toEChartsData(
         tradesGAL,
@@ -70,9 +80,22 @@ export const GALChart = () => {
     )
   })
 
+  window.addEventListener('resize', () => {
+    if (myCharts && chartRef) {
+      myCharts.resize()
+      setHeight(getOtherHeight())
+    }
+  })
+
   return (
     <div>
-      <div ref={chartRef} style={{ width: '500px', height: '350px' }}></div>
+      <div
+        ref={chartRef}
+        style={{
+          width: '100vw',
+          height: `calc(100vh - ${otherChartsHeight}px)`,
+        }}
+      ></div>
     </div>
   )
 }

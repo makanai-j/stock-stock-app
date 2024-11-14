@@ -142,7 +142,7 @@ export class CRUD {
       FROM trades AS t `
     } else {
       sql = `SELECT 
-      t.id, t.date, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, (t.price - COALESCE(nt.price, 0)) as gal, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
+      t.id, t.date, nt.date as date0, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, (t.price - COALESCE(nt.price, 0)) as gal, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
       FROM (select * from trades WHERE trade_type IN (?, ?, ?)) as t
       LEFT JOIN trade_links AS tl ON t.id = tl.repay_trade_id
       LEFT JOIN trades AS nt ON tl.new_trade_id = nt.id `

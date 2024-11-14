@@ -17,9 +17,9 @@ import {
   formatToTime,
 } from 'renderer/TradesHistory/hooks/formatToTime'
 import {
-  useTradesHistory,
-  useTradesHistoryDispatch,
-} from 'renderer/TradesHistory/TradesHistoryContext'
+  useSelectedTrades,
+  useSelectedTradesDispatch,
+} from 'renderer/TradesHistory/SelectedTradesContext'
 import {
   useYFOptions,
   useYFOptionsDispatch,
@@ -93,8 +93,8 @@ const stickyStyles = {
 export const HistoryList = () => {
   const [listTrades, setListTrades] = useState<TradeRecordRaw[]>([])
   const [hoverTrade, setHoverTrade] = useState<TradeRecordRaw | null>(null)
-  const selectedTrades = useTradesHistory()
-  const tradesDispatch = useTradesHistoryDispatch()
+  const selectedTrades = useSelectedTrades()
+  const tradesDispatch = useSelectedTradesDispatch()
   const yfOptions = useYFOptions()
   const yfOptionsDispatch = useYFOptionsDispatch()
 
@@ -166,15 +166,17 @@ export const HistoryList = () => {
 
   return (
     <div>
-      <BaseDatePicker
-        format="YYYY/M"
-        formatDensity="spacious"
-        views={['year', 'month']}
-        slotProps={{
-          calendarHeader: { format: 'YYYY/M' },
-        }}
-        onChange={(e) => e && setListPeriod(e.toString())}
-      />
+      <div style={{ height: '24px', padding: '5px' }}>
+        <BaseDatePicker
+          format="YYYY/M"
+          formatDensity="spacious"
+          views={['year', 'month']}
+          slotProps={{
+            calendarHeader: { format: 'YYYY/M' },
+          }}
+          onChange={(e) => e && setListPeriod(e.toString())}
+        />
+      </div>
       <TableContainer
         className="table-container"
         sx={{ width: 300, minWidth: 300 }}

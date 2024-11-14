@@ -2,6 +2,7 @@ import { IconButton, iconButtonClasses, styled } from '@mui/material'
 
 export const IconButtonNormal = styled(IconButton)(() => ({
   [`&.${iconButtonClasses.root}:hover`]: {
+    color: '#ccf',
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
 }))

@@ -6,7 +6,7 @@ import { priceFormatter } from 'renderer/hooks/priceFormatter'
 
 export const TradesInfo = ({ trades }: { trades: TradeRecordRaw[] }) => {
   return (
-    <div className="trades-info" data-simplebar>
+    <div className="trades-info">
       <table>
         <thead>
           <tr>

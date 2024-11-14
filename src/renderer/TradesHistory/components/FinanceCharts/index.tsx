@@ -12,7 +12,7 @@ import {
   xAxis0,
   xAxis1,
 } from './chart/eChartsOption'
-import { useTradesHistory } from 'renderer/TradesHistory/TradesHistoryContext'
+import { useSelectedTrades } from 'renderer/TradesHistory/SelectedTradesContext'
 import { useYFOptions } from 'renderer/TradesHistory/YFOptionsContext'
 //import { YFOptions } from '../../../../types/yfTypes'
 
@@ -24,7 +24,7 @@ import { useYFOptions } from 'renderer/TradesHistory/YFOptionsContext'
  */
 export const FinanceChart = () => {
   const chartRef = useRef<HTMLDivElement>(null)
-  const trades = useTradesHistory()
+  const trades = useSelectedTrades()
   const yfOptions = useYFOptions()
   let myCharts: echarts.ECharts
 
