@@ -3,6 +3,8 @@ const db = new sqlite3.Database('./stock.db')
 
 import { brandProfilesSql, businessTypeSql, marketPlacesSql } from './sql'
 
+db.run('drop table trades;')
+
 const tradeTables = [
   {
     name: 'trades',

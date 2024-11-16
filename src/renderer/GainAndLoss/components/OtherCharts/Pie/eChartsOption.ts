@@ -1,6 +1,9 @@
 export const pieOption = {
   tooltip: {
     trigger: 'item',
+    valueFormatter: (value: number, i: number) => {
+      return Math.floor(value * 100).toString()
+    },
   },
   legend: {
     //show: false,

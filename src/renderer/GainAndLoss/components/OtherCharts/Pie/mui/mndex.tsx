@@ -1,6 +1,7 @@
-import * as React from 'react'
-import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart'
 import { LegendRendererProps } from '@mui/x-charts'
+import { PieChart } from '@mui/x-charts/PieChart'
+import * as React from 'react'
+
 import { ItemTooltipFixedY } from './ToolTip'
 
 export const StyledPie = ({

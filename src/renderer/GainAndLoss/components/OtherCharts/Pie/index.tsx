@@ -1,5 +1,8 @@
 import * as echarts from 'echarts'
 import { useEffect, useRef } from 'react'
+
+import { priceFormatter } from 'renderer/hooks/priceFormatter'
+
 import { pieOption } from './eChartsOption'
 
 export const Piee = ({
@@ -62,7 +65,7 @@ const formatter = (suffix: string) => {
               <div style='padding: 0; margin: 0;'>
               ${params.name}
               </div>
-              <div style=' margin-left: 10px; '>${params.value}${suffix}</div>
+              <div style=' margin-left: 10px; '>${priceFormatter(Number(params.value))}${suffix}</div>
           </div>
       `
   }

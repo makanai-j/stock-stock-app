@@ -1,14 +1,13 @@
+import { Button } from '@mui/material'
+import { useEffect, useState } from 'react'
+
 import { AddRecordTable } from './components/AddRecordTable'
+import { CSVInmport } from './components/CSVImport'
 import {
   InputTradesProvider,
   useInputTrades,
   useInputTradesDispatch,
 } from './InputTradesContext'
-import { useEffect, useRef, useState } from 'react'
-import { QuarterPicker } from 'renderer/MyMui/QuarterPicker'
-import { BaseDatePicker } from 'renderer/MyMui/BaseDatePicker'
-import { MyDateTimePicker } from 'renderer/MyMui'
-import { Button, TableContainer } from '@mui/material'
 
 export const InputTrades = () => {
   return (
@@ -25,8 +24,6 @@ const NewAddChild = () => {
   const dispatch = useInputTradesDispatch()
   const [ableInsert, setAbleInsert] = useState(true)
   const [message, setMessage] = useState('')
-
-  console.log(tradeGroups)
 
   const flatTrades = () => {
     if (!tradeGroups) return []
@@ -94,6 +91,7 @@ const NewAddChild = () => {
         >
           保存
         </Button>
+        <CSVInmport setFailMessage={setMessage} />
         <FailMessage message={message} reset={resetMessage} />
       </div>
       <AddRecordTable tradeGroups={tradeGroups} />

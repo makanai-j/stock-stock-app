@@ -1,12 +1,13 @@
-import { formatToDateTime } from 'renderer/TradesHistory/hooks/formatToTime'
+import { getGAL } from 'renderer/GainAndLoss/hooks/getGAL'
 import { priceFormatter } from 'renderer/hooks/priceFormatter'
+import { formatToDateTime } from 'renderer/TradesHistory/hooks/formatToTime'
 
 /** 損益リスト */
 export const GALList = ({ tradeGals }: { tradeGals: TradeRecordGAL[][] }) => {
   /** 損益データを成形して返す */
   const getGals = () => {
     return tradeGals.map((trades) => {
-      const gal: GAL = {
+      const galDetails: GALDetails = {
         gal: 0,
         period1: new Date(trades[0].date),
         period2: new Date(),
@@ -18,16 +19,18 @@ export const GALList = ({ tradeGals }: { tradeGals: TradeRecordGAL[][] }) => {
         tax: 0,
       }
       for (const trade of trades) {
-        gal.period2 = new Date(trade.date)
-        gal.quantity += trade.quantity
-        gal.tradeNum += 1
-        gal.gain += trade.gal > 0 ? trade.gal * trade.quantity : 0
-        gal.loss += trade.gal < 0 ? trade.gal * trade.quantity : 0
-        gal.fee += trade.fee
-        gal.tax += trade.tax
+        const tradeGal = getGAL(trade)
+        galDetails.period2 = new Date(trade.date)
+        galDetails.quantity += trade.quantity
+        galDetails.tradeNum += 1
+        galDetails.gain += tradeGal > 0 ? tradeGal * trade.quantity : 0
+        galDetails.loss += tradeGal < 0 ? tradeGal * trade.quantity : 0
+        galDetails.fee += trade.fee
+        galDetails.tax += trade.tax
       }
-      gal.gal += gal.gain + gal.loss - (gal.fee + gal.tax)
-      return gal
+      galDetails.gal +=
+        galDetails.gain + galDetails.loss - (galDetails.fee + galDetails.tax)
+      return galDetails
     })
   }
   return (

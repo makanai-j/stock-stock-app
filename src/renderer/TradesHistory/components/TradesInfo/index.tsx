@@ -1,8 +1,5 @@
-import {
-  formatToDateTime,
-  formatToTime,
-} from 'renderer/TradesHistory/hooks/formatToTime'
 import { priceFormatter } from 'renderer/hooks/priceFormatter'
+import { formatToDateTime } from 'renderer/TradesHistory/hooks/formatToTime'
 
 export const TradesInfo = ({ trades }: { trades: TradeRecordRaw[] }) => {
   return (

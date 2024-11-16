@@ -46,10 +46,11 @@ const tooltip = {
     size: { contentSize: number[]; viewSize: number[] }
   ) {
     const obj: { [position: string]: number } = { top: 10 }
-    if (pos[0] < size.viewSize[0] / 2) obj.right = 10
+    if (pos[0] < size.viewSize[0] / 2) obj.right = 20
     else obj.left = 10
     return obj
   },
+  animation: false,
 }
 
 //

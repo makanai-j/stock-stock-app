@@ -1,5 +1,6 @@
 import { aggregateTradeGAL } from 'renderer/GainAndLoss/hooks/aggregateTradeGAL'
 import { findTradesByDate } from 'renderer/GainAndLoss/hooks/findTradesByDate'
+import { getGAL } from 'renderer/GainAndLoss/hooks/getGAL'
 
 /**
  * 売り買いのデータをチャート用のデータに成型する
@@ -54,7 +55,7 @@ export const toEChartsData = (
       tradesGroup.forEach((trades, index) => {
         /** 間隔内の経過損益 */
         let periodTotal = 0
-        trades.forEach((trade) => (periodTotal += trade.gal * trade.quantity))
+        trades.forEach((trade) => (periodTotal += getGAL(trade)))
 
         const tradeDate = new Date(trades[0].date)
         eChartsData.xAxisData.push(
@@ -82,7 +83,7 @@ export const toEChartsData = (
       if (date < new Date(tradesGroup[0][0].date)) break
 
       tradesGroup.forEach((trades) =>
-        trades.forEach((trade) => (total += trade.gal * trade.quantity))
+        trades.forEach((trade) => (total += getGAL(trade)))
       )
 
       // 指定日を含むデータがなければ、指定日までの総損益を表示

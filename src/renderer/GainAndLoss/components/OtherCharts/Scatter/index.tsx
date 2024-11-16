@@ -1,5 +1,6 @@
 import * as echarts from 'echarts'
 import { useEffect, useRef } from 'react'
+
 import { markLineOpt, scatterOption } from './eChartsOption'
 import { correlation } from '../datas/correlation'
 
@@ -49,7 +50,6 @@ export const Scatter = ({
     const point1 = [x1, y1]
     const point2 = [x2, y2]
 
-    console.log(point1, point2)
     myCharts = echarts.init(chartRef.current)
     myCharts?.setOption({
       ...scatterOption,

@@ -1,4 +1,3 @@
-import { BorderLeft, Key, Padding } from '@mui/icons-material'
 import {
   styled,
   Table,
@@ -8,10 +7,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  tableRowClasses,
 } from '@mui/material'
-import React from 'react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+import { priceFormatter } from 'renderer/hooks/priceFormatter'
+import { BaseDatePicker } from 'renderer/MyMui'
 import {
   formatToDateDay,
   formatToTime,
@@ -24,8 +24,6 @@ import {
   useYFOptions,
   useYFOptionsDispatch,
 } from 'renderer/TradesHistory/YFOptionsContext'
-import { priceFormatter } from 'renderer/hooks/priceFormatter'
-import { BaseDatePicker } from 'renderer/MyMui'
 
 const stickyStyles = {
   header: [

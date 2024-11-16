@@ -1,3 +1,5 @@
+import { getGAL } from 'renderer/GainAndLoss/hooks/getGAL'
+
 export const toLongShortPie = (tradeGals: TradeRecordGAL[][]) => {
   const data: {
     name: string
@@ -27,25 +29,25 @@ export const toLongShortPie = (tradeGals: TradeRecordGAL[][]) => {
   ]
 
   for (const trades of tradeGals) {
-    const longTrades = trades.filter(
-      (trade) => trade.tradeType == '現物売' || trade.tradeType == '信用返済売'
-    )
-    const shortTrades = trades.filter(
-      (trade) => trade.tradeType == '信用返済買'
-    )
+    for (const trade of trades) {
+      const { tradeType } = trade
 
-    data[0].value += longTrades
-      .filter((trade) => trade.gal > 0)
-      .reduce((sum, curr) => sum + curr.gal, 0)
-    data[1].value += longTrades
-      .filter((trade) => trade.gal < 0)
-      .reduce((sum, curr) => sum + Math.abs(curr.gal), 0)
-    data[2].value += shortTrades
-      .filter((trade) => trade.gal > 0)
-      .reduce((sum, curr) => sum + curr.gal, 0)
-    data[3].value += shortTrades
-      .filter((trade) => trade.gal < 0)
-      .reduce((sum, curr) => sum + Math.abs(curr.gal), 0)
+      const amount = getGAL(trade)
+
+      if (tradeType === '現物売' || tradeType === '信用返済売') {
+        if (amount > 0) {
+          data[0].value += amount // Long plus
+        } else if (amount < 0) {
+          data[1].value += Math.abs(amount) // Long minus
+        }
+      } else if (tradeType === '信用返済買') {
+        if (amount > 0) {
+          data[2].value += amount // Short plus
+        } else if (amount < 0) {
+          data[3].value += Math.abs(amount) // Short minus
+        }
+      }
+    }
   }
 
   return data

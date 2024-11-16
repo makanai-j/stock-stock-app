@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react'
 //import { isIntervalString, YFOptions } from '../../types/yfTypes'
+import { FinanceChart } from './components/FinanceCharts'
+import { HistoryList } from './components/HistoryList'
+import { TradesInfo } from './components/TradesInfo'
+import { usableInterval } from './hooks/usableInterval'
 import {
   useSelectedTrades,
   SelectedTradesProvider,
@@ -9,12 +12,10 @@ import {
   useYFOptionsDispatch,
   YFOptionsProvider,
 } from './YFOptionsContext'
-import { FinanceChart } from './components/FinanceCharts'
-import { HistoryList } from './components/HistoryList'
-import { usableInterval } from './hooks/usableInterval'
-import { TradesInfo } from './components/TradesInfo'
+
 import './index.css'
 import { MySelect } from 'renderer/MyMui'
+
 import { MenuItem, SelectChangeEvent } from '@mui/material'
 
 /**

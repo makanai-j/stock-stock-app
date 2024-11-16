@@ -1,10 +1,10 @@
-import * as React from 'react'
+import { Paper, Stack, Typography } from '@mui/material'
 import NoSsr from '@mui/material/NoSsr'
 import Popper from '@mui/material/Popper'
 import { useItemTooltip, useMouseTracker } from '@mui/x-charts/ChartsTooltip'
-import { useDrawingArea, useSvgRef } from '@mui/x-charts/hooks'
 import { generateVirtualElement } from '@mui/x-charts/ChartsTooltip/utils'
-import { Paper, Stack, Typography } from '@mui/material'
+import { useDrawingArea, useSvgRef } from '@mui/x-charts/hooks'
+import * as React from 'react'
 
 export function ItemTooltipFixedY() {
   const tooltipData = useItemTooltip()

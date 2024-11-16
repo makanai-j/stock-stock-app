@@ -1,6 +1,8 @@
+import ListAltIcon from '@mui/icons-material/ListAlt'
 import { MenuItem } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
 import { useEffect } from 'react'
+
 import {
   useEChartsOption,
   useEChartsOptionDispatch,
@@ -13,7 +15,6 @@ import {
   MySelect,
   QuarterPicker,
 } from 'renderer/MyMui'
-import ListAltIcon from '@mui/icons-material/ListAlt'
 
 export const GALHeader = (props: { toggle: () => void }) => {
   const eChartsOption = useEChartsOption()

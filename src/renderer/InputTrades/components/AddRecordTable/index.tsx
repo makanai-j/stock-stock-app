@@ -1,52 +1,50 @@
-import { useState } from 'react'
-import './index.css'
-import { useInputTradesDispatch } from 'renderer/InputTrades/InputTradesContext'
-import HashStr from 'renderer/InputTrades/hooks/Hash11'
-import { MyDateTimePicker, MySelect, MyTextField } from 'renderer/MyMui'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import {
-  MenuItem,
-  styled,
   Table,
   TableBody,
-  TableCell,
-  tableCellClasses,
   TableContainer,
-  TableFooter,
   TableHead,
   TableRow,
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
-import { IconButtonNormal, IconButtonCancel } from 'renderer/MyMui'
-import dayjs from 'dayjs'
-import { MyNumberField } from 'renderer/MyMui/MyNumberField'
+import React from 'react'
+
+import './index.css'
+import { IconButtonNormal } from 'renderer/MyMui'
+
+import { StyledTableCell } from '../../../MyMui/StyledTableCell'
 import { TradeTabledRow } from '../TradeTableRow'
-import { StyledTableCell } from '../StyledTableCell'
-import { NewAddTableRow } from '../NewAddTableRow'
 
 export const AddRecordTable = (props: { tradeGroups: TradeRecord[][] }) => {
   return (
     <TableContainer sx={{ height: 'calc(100vh - 112px)' }}>
       <Table stickyHeader>
-        <AddRecordHead />
+        <TradeTableHead />
         <TableBody>
-          {props.tradeGroups.map((trades) =>
-            trades.map((trade, index) => (
-              <TradeTabledRow
-                key={`${trade.id}-${index}`}
-                trade={trade}
-                index={index}
-              />
-            ))
-          )}
+          {props.tradeGroups.map((trades, i) => (
+            <TradeGroupComponent
+              key={`${trades.length}-${i}`}
+              tradeGroup={trades}
+            />
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
   )
 }
 
-const AddRecordHead = () => {
+const TradeGroupComponent = React.memo(
+  ({ tradeGroup }: { tradeGroup: TradeRecord[] }) => {
+    return tradeGroup.map((trade, index) => (
+      <TradeTabledRow
+        key={`${trade.id}-${index}`}
+        trade={trade}
+        index={index}
+      />
+    ))
+  }
+)
+
+const TradeTableHead = () => {
   return (
     <TableHead>
       <TableRow>

@@ -1,12 +1,12 @@
 .other-container {
-    display: flex;
-    background-color: #202040;
-    overflow-x: auto;
-    overflow-y: hidden;
+  display: flex;
+  background-color: #202040;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .other-size-height {
-    height: calc(30vh);
-    max-height: 200px;
-    min-height: 130px;
+  height: calc(30vh);
+  max-height: 200px;
+  min-height: 130px;
 }

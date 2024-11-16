@@ -1,8 +1,10 @@
-import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom'
-import { Header } from './components/Header'
+import { HashRouter as Router, Route, Routes } from 'react-router-dom'
+
 import { GainAndLoss } from 'renderer/GainAndLoss'
 import { InputTrades } from 'renderer/InputTrades'
 import { TradesHistory } from 'renderer/TradesHistory'
+
+import { Header } from './components/Header'
 
 export const App = () => {
   return (

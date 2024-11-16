@@ -1,8 +1,8 @@
-import { toLongShortPie } from './datas/longShortPie'
 import { toBusinessTypePie } from './datas/businessTypePie'
+import { toLongShortPie } from './datas/longShortPie'
+import { toTimeAndGalScatterData } from './datas/timeAndGAL'
 import { Piee } from './Pie'
 import { Scatter } from './Scatter'
-import { toTimeAndGalScatterData } from './datas/timeAndGAL'
 import './index.css'
 
 export const OtherCharts = ({
@@ -10,7 +10,6 @@ export const OtherCharts = ({
 }: {
   tradeGals: TradeRecordGAL[][]
 }) => {
-  console.log(tradeGals)
   const longTrades = tradeGals
     .flatMap((t) => t)
     .filter(

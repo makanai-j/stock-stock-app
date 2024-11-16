@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
+import { useEffect, useRef, useState } from 'react'
+
+import { useEChartsOption } from 'renderer/GainAndLoss/EChartsOptionContext'
 import { useGAL } from 'renderer/GainAndLoss/GALContext'
+
 import {
   initialEchartsOption,
   series,
@@ -10,7 +13,6 @@ import {
   xAxis1,
 } from './chart/eChartsOption'
 import { toEChartsData } from './chart/toEChartsData'
-import { useEChartsOption } from 'renderer/GainAndLoss/EChartsOptionContext'
 
 /**
  * 損益のチャート
@@ -31,7 +33,6 @@ export const GALChart = () => {
   const [otherChartsHeight, setHeight] = useState(getOtherHeight())
 
   useEffect(() => {
-    console.log('create chart')
     let eChartsData: EChartsDataGAL = {
       xAxisData: [],
       xAxisData0: [],

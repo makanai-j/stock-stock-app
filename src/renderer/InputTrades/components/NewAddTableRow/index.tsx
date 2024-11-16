@@ -1,13 +1,15 @@
+import DeleteIcon from '@mui/icons-material/Delete'
+import { MenuItem, TableRow } from '@mui/material'
+
 import {
   IconButtonCancel,
   MyDateTimePicker,
   MySelect,
   MyTextField,
 } from 'renderer/MyMui'
-import { MenuItem, TableRow } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
 import { MyNumberField } from 'renderer/MyMui/MyNumberField'
-import { StyledTableCell } from '../StyledTableCell'
+
+import { StyledTableCell } from '../../../MyMui/StyledTableCell'
 
 export const NewAddTableRow = ({
   onClickAdd,

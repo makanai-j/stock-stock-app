@@ -1,13 +1,14 @@
-import { GALProvider, useGAL } from './GALContext'
-import { GALList } from './components/GALList'
-import { GALChart } from './components/GALCharts'
-import { EChartsOptionProvider, useEChartsOption } from './EChartsOptionContext'
-import { GALHeader } from './components/GALHeader'
-import './index.css'
 import { useMemo, useState } from 'react'
+
+import { GALChart } from './components/GALCharts'
+import { GALHeader } from './components/GALHeader'
+import { GALList } from './components/GALList'
 import { OtherCharts } from './components/OtherCharts'
-import { findTradesByDate } from './hooks/findTradesByDate'
+import { EChartsOptionProvider, useEChartsOption } from './EChartsOptionContext'
+import { GALProvider, useGAL } from './GALContext'
+import './index.css'
 import { aggregateTradeGAL } from './hooks/aggregateTradeGAL'
+import { findTradesByDate } from './hooks/findTradesByDate'
 
 export const GainAndLoss = () => {
   return (

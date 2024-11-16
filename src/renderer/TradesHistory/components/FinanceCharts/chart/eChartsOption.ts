@@ -2,8 +2,6 @@
  * 履歴チャートのオプション
  */
 
-import { LineStyle, Opacity } from '@mui/icons-material'
-
 // static
 const axisPointer = {
   link: [{ xAxisIndex: 'all' }],

@@ -1,11 +1,11 @@
-import SsidChartOutlinedIcon from '@mui/icons-material/SsidChartOutlined'
-import PlaylistAddOutlinedIcon from '@mui/icons-material/PlaylistAddOutlined'
 import FeaturedPlayListOutlinedIcon from '@mui/icons-material/FeaturedPlayListOutlined'
+import PlaylistAddOutlinedIcon from '@mui/icons-material/PlaylistAddOutlined'
+import SsidChartOutlinedIcon from '@mui/icons-material/SsidChartOutlined'
 import './index.css'
-import { IconButton, Tooltip } from '@mui/material'
+import { Tooltip } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
+
 import { IconButtonNormal } from 'renderer/MyMui'
-import { series } from 'renderer/GainAndLoss/components/GALCharts/chart/eChartsOption'
 
 export const Header = () => {
   const location = useLocation()

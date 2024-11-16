@@ -13,7 +13,7 @@ export interface IElectronAPI {
    *
    * @returns csvファイルのデータ
    */
-  fileRead: () => Promise<any>
+  fileRead: () => Promise<string[][]>
 }
 
 export interface ICrudAPI {

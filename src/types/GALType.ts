@@ -1,4 +1,4 @@
-type GAL = {
+type GALDetails = {
   period1: Date
   period2: Date
   gal: number
@@ -11,8 +11,10 @@ type GAL = {
 }
 
 type TradeRecordGAL = {
-  gal: number
+  //gal: number
   date0: Date | string | number
+  newTradePrice: number
+  repayTradePrice: number
 } & TradeRecordBase
 
 type GALInterval = '1d' | '1w' | '1mo' | '1y'

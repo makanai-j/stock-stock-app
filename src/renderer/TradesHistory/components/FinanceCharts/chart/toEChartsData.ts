@@ -1,8 +1,6 @@
 //import { YFChartObject } from '../../../../../types/yfTypes'
 import { getCloserDay } from 'renderer/TradesHistory/hooks/getCloserDay'
-import { xAxis } from './eChartsOption'
-import { NewTradeTypeArray } from 'types/TradeObject'
-import { RepayTradeTypeArray } from 'types/TradeObject'
+import { NewTradeTypeArray, RepayTradeTypeArray } from 'types/TradeObject'
 
 type EChartsData = {
   xAxisData: string[]

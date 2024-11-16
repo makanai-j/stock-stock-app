@@ -1,7 +1,4 @@
-import {
-  DateValidationError,
-  PickerChangeHandlerContext,
-} from '@mui/x-date-pickers'
+import { PickerChangeHandlerContext } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
 
 type MyDatePickerProps<T> = {

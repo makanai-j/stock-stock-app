@@ -1,19 +1,19 @@
-import { useEffect, useRef } from 'react'
 import * as echarts from 'echarts'
-import { toEChartsData } from './chart/toEChartsData'
+import { useEffect, useRef } from 'react'
+
+import { useSelectedTrades } from 'renderer/TradesHistory/SelectedTradesContext'
+import { useYFOptions } from 'renderer/TradesHistory/YFOptionsContext'
+
 import {
   initialEchartsOption,
   series,
   series0,
-  buyLine,
-  sellLine,
   separatorLine,
   xAxis,
   xAxis0,
   xAxis1,
 } from './chart/eChartsOption'
-import { useSelectedTrades } from 'renderer/TradesHistory/SelectedTradesContext'
-import { useYFOptions } from 'renderer/TradesHistory/YFOptionsContext'
+import { toEChartsData } from './chart/toEChartsData'
 //import { YFOptions } from '../../../../types/yfTypes'
 
 /**

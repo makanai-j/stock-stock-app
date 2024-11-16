@@ -1,31 +1,34 @@
-import * as React from 'react'
-import PropTypes from 'prop-types'
-import clsx from 'clsx'
-import { useRtl } from '@mui/system/RtlProvider'
 import { styled, useThemeProps } from '@mui/material/styles'
+import { useRtl } from '@mui/system/RtlProvider'
 import {
   unstable_useControlled as useControlled,
   unstable_composeClasses as composeClasses,
   unstable_useEventCallback as useEventCallback,
 } from '@mui/utils'
-import { PickersMonth } from './PickersMonth'
+import {
+  getMonthCalendarUtilityClass,
+  MonthCalendarProps,
+  PickerValidDate,
+} from '@mui/x-date-pickers'
 import {
   useUtils,
   useNow,
   useDefaultDates,
+  DefaultizedProps,
+  useControlledValueWithTimezone,
+  DIALOG_WIDTH,
 } from '@mui/x-date-pickers/internals'
-import { getMonthCalendarUtilityClass } from '@mui/x-date-pickers'
 import {
   applyDefaultDate,
   getMonthsInYear,
 } from '@mui/x-date-pickers/internals/utils/date-utils'
-import { DefaultizedProps } from '@mui/x-date-pickers/internals'
-import { MonthCalendarProps } from '@mui/x-date-pickers'
-import { singleItemValueManager } from '@mui/x-date-pickers/internals/utils/valueManagers'
 import { SECTION_TYPE_GRANULARITY } from '@mui/x-date-pickers/internals/utils/getDefaultReferenceDate'
-import { useControlledValueWithTimezone } from '@mui/x-date-pickers/internals'
-import { DIALOG_WIDTH } from '@mui/x-date-pickers/internals'
-import { PickerValidDate } from '@mui/x-date-pickers'
+import { singleItemValueManager } from '@mui/x-date-pickers/internals/utils/valueManagers'
+import clsx from 'clsx'
+import PropTypes from 'prop-types'
+import * as React from 'react'
+
+import { PickersMonth } from './PickersMonth'
 
 const useUtilityClasses = (ownerState: MonthCalendarProps<any>) => {
   const { classes } = ownerState

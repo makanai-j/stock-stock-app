@@ -1,3 +1,5 @@
+import { priceFormatter } from 'renderer/hooks/priceFormatter'
+
 const splitLine = {
   lineStyle: {
     width: 0.5,
@@ -69,7 +71,6 @@ export const scatterOption = {
     },
     formatter: (params: any) => {
       if (!params) return
-      console.log(params.value)
 
       let dataStr = `<div>${params.marker}${params.seriesName}</div>`
 
@@ -95,7 +96,7 @@ export const scatterOption = {
             data += `${m}分`
           }
         } else {
-          data = value + '円'
+          data = priceFormatter(value) + '円'
         }
         dataStr += `
               <div style='display: flex'>

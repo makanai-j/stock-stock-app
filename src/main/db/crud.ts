@@ -1,9 +1,10 @@
 /**
- * 約定日,銘柄コード,銘柄名,市場,取引区分,預り区分,約定数量,約定単価,手数料/諸経費等,税額,受渡金額/決済損益,業種
+ *
  */
-import { db } from './initializeDatabase'
-import { isNewTradeType, turnedTradeType } from './dbHooks'
 import { TradeDBError } from 'types/TradeError'
+
+import { isNewTradeType, turnedTradeType } from './dbHooks'
+import { db } from './initializeDatabase'
 
 const executeSelectQuery = (
   sql: string,
@@ -49,14 +50,15 @@ export class CRUD {
     try {
       await executeNonQuery('BEGIN TRANSACTION')
 
-      // 新規取引
+      //
       const newTrades = trades.filter((data) => isNewTradeType(data.trade_type))
       if (newTrades.length) await _insert(newTrades)
 
-      // 返済取引
-      const repayTrades = trades.filter(
-        (data) => !isNewTradeType(data.trade_type)
-      )
+      //
+      const repayTrades = trades
+        .filter((data) => !isNewTradeType(data.trade_type))
+        .sort((trade1, trade2) => trade1.date - trade2.date)
+
       if (!repayTrades.length) return executeNonQuery('COMMIT')
 
       const newTradeSql = `
@@ -71,6 +73,11 @@ export class CRUD {
           repayTrade.symbol,
           turnedTradeType(repayTrade.trade_type),
         ])
+
+        if (repayTrade.symbol == '7013') {
+          console.log(repayTrade)
+          console.log(rows)
+        }
 
         let repayQuant = repayTrade.quantity
         const tradesToUpdate: TradeRecordDB[] = []
@@ -101,15 +108,14 @@ export class CRUD {
           )
         }
 
-        if (repayQuant)
-          throw new TradeDBError(
-            repayTrade.id,
-            '所有株数に対して返済取引の数が合っていません'
-          )
+        if (repayQuant) {
+          console.log(rows)
+          throw new TradeDBError(repayTrade.id, '取引数量が合っていません')
+        }
 
         await CRUD.update(tradesToUpdate, ['rest_quantity'])
 
-        // trade_links で紐づけ
+        // trade_links
         const insertLinksSql = `INSERT INTO trade_links (new_trade_id, repay_trade_id, trade_quantity) VALUES ${tradesToUpdate.map(() => '(?,?,?)').join(',')}`
 
         executeNonQuery(insertLinksSql, linksParams)
@@ -125,12 +131,9 @@ export class CRUD {
   }
 
   /**
-   * 各テーブルをつなげて返す。
+   *
    * @param options
-   * オプションに基づいて作成。
-   * idが指定されている場合は、fileterは無視される。
-   * 何も指定されていなければ全レコードを返す。
-   * @returns レコード
+   * @returns
    */
   static async select(options: SelectFilterOptions): Promise<any[]> {
     let sql = ''
@@ -142,11 +145,16 @@ export class CRUD {
       FROM trades AS t `
     } else {
       sql = `SELECT 
-      t.id, t.date, nt.date as date0, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, (t.price - COALESCE(nt.price, 0)) as gal, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
+      t.id, t.date, nt.date as date0, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, 
+      CASE 
+          WHEN t.trade_type IN (?) THEN (nt.price - COALESCE(t.price, 0)) 
+          ELSE (t.price - COALESCE(nt.price, 0)) 
+      END AS gal,
+      t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name, t.price as repayTradePrice, nt.price as newTradePrice
       FROM (select * from trades WHERE trade_type IN (?, ?, ?)) as t
       LEFT JOIN trade_links AS tl ON t.id = tl.repay_trade_id
       LEFT JOIN trades AS nt ON tl.new_trade_id = nt.id `
-      params.push('現物売', '信用返済買', '信用返済売')
+      params.push('信用返済買', '現物売', '信用返済買', '信用返済売')
     }
 
     sql += ` LEFT JOIN brand_profiles AS bp ON t.symbol = bp.id
@@ -252,7 +260,6 @@ export class CRUD {
   }
 
   static async delete(ids: string[]): Promise<void> {
-    // プレースホルダーを配列の長さに合わせて生成
     const placeholders = ids.map(() => '?').join(',')
     const deleteSql = `DELETE FROM trades WHERE id IN (${placeholders})`
     await executeNonQuery(deleteSql, ids)

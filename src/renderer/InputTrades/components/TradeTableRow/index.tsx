@@ -1,18 +1,20 @@
-import { useInputTradesDispatch } from 'renderer/InputTrades/InputTradesContext'
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { MenuItem, TableRow } from '@mui/material'
+import dayjs from 'dayjs'
+import { useState } from 'react'
+
 import HashStr from 'renderer/InputTrades/hooks/Hash11'
+import { useInputTradesDispatch } from 'renderer/InputTrades/InputTradesContext'
 import {
   IconButtonCancel,
   IconButtonNormal,
   MyDateTimePicker,
   MySelect,
   MyTextField,
+  MyNumberField,
+  StyledTableCell,
 } from 'renderer/MyMui'
-import { MenuItem, TableRow } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
-import dayjs from 'dayjs'
-import { MyNumberField } from 'renderer/MyMui/MyNumberField'
-import { StyledTableCell } from '../StyledTableCell'
 
 export const TradeTabledRow = ({
   trade,
@@ -21,8 +23,11 @@ export const TradeTabledRow = ({
   trade: TradeRecord
   index: number
 }) => {
+  const [dateTime, setDateTime] = useState(dayjs(trade.date))
   const dispatch = useInputTradesDispatch()
   //const [trade, setTrade] = useState(initializedTrade)
+
+  console.log(trade.id)
 
   return (
     <TableRow hover sx={{ cursor: 'pointer' }}>
@@ -63,17 +68,17 @@ export const TradeTabledRow = ({
           <MyDateTimePicker
             format="YYYY/M/D H:m"
             value={dayjs(trade.date)}
-            onChange={(e) =>
+            onClose={() =>
               dispatch &&
-              e &&
               dispatch({
                 type: 'update',
                 trade: {
                   ...trade,
-                  date: new Date(e?.toString()).getTime(),
+                  date: dateTime.valueOf(),
                 },
               })
             }
+            onChange={(e) => e && setDateTime(e)}
           />
         </ShowOnFirstIndex>
       </StyledTableCell>
@@ -215,6 +220,14 @@ const ShowOnFirstIndex = ({
   index: number
 }) => {
   return (
-    <div>{index == 0 ? children : <div className="input">{text}</div>}</div>
+    <div>
+      {index == 0 ? (
+        children
+      ) : (
+        <div className="input" style={{ textAlign: 'center' }}>
+          {text}
+        </div>
+      )}
+    </div>
   )
 }
