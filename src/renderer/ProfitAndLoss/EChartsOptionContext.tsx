@@ -1,9 +1,11 @@
 import { createContext, useContext, useReducer, Dispatch } from 'react'
 
 type EChartsAction =
-  | { type: 'setInterval'; interval: GALInterval }
+  | { type: 'setInterval'; interval: PnLInterval }
   | { type: 'setDate'; date: Date }
-type EChartsOption = { interval: GALInterval; date: Date }
+
+type EChartsOption = { interval: PnLInterval; date: Date }
+
 const EChartsOptionContext = createContext<EChartsOption | null>(null)
 const EChartsOptionDispachContext =
   createContext<Dispatch<EChartsAction> | null>(null)

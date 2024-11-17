@@ -1,6 +1,6 @@
-export const toBusinessTypePie = (tradeGals: TradeRecordGAL[][]) => {
+export const toBusinessTypePie = (tradePnLs: TradeRecordPnL[][]) => {
   let data: { name: string; value: number; color: string }[] = []
-  for (const trades of tradeGals) {
+  for (const trades of tradePnLs) {
     for (const trade of trades) {
       if (data.map((d) => d.name).includes(trade.businessTypeName)) {
         data = data.map((d) => {

@@ -1,7 +1,7 @@
 import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 
-import { GainAndLoss } from 'renderer/GainAndLoss'
 import { InputTrades } from 'renderer/InputTrades'
+import { GainAndLoss } from 'renderer/ProfitAndLoss'
 import { TradesHistory } from 'renderer/TradesHistory'
 
 import { Header } from './components/Header'

@@ -1,10 +1,15 @@
 import { Button } from '@mui/material'
 
-import './index.css'
 import { csvReader } from './csvReader'
+import './index.css'
 
-export const CSVInmport = (props: {
-  setFailMessage: React.Dispatch<React.SetStateAction<string>>
+export const CSVInmport = ({
+  setResultMessage,
+}: {
+  setResultMessage: {
+    (props: { result: 'fail'; trade?: TradeRecord | undefined }): void
+    (props: { result: 'succeed'; recordNum: number }): void
+  }
 }) => {
   const readCSV = () => {
     window.electronAPI
@@ -15,16 +20,19 @@ export const CSVInmport = (props: {
         console.log(trades)
         window.crudAPI
           .insert(trades)
-          .then(() => console.log(`${trades.length}件の取引を保存しました`))
+          .then(() =>
+            setResultMessage({ result: 'succeed', recordNum: trades.length })
+          )
           .catch((e) => {
             if (e.failId) {
               trades.forEach((trade) => {
-                if (trade.id === e.failId) console.log(trade)
+                if (trade.id === e.failId)
+                  setResultMessage({ result: 'fail', trade })
               })
             }
           })
       })
-      .catch(() => props.setFailMessage('ファイルの取得に失敗しました'))
+      .catch(() => setResultMessage({ result: 'fail' }))
   }
 
   return (
@@ -46,22 +54,6 @@ export const CSVInmport = (props: {
       >
         CSV
       </Button>
-      {/* {show && (
-        <>
-          <div
-            className="csv-drag-drop"
-            id="drop_zone"
-            onDrop={dropHandler}
-            onDragOver={(e) => {
-              console.log('drop')
-              e.preventDefault()
-            }}
-          >
-            <p>CSVファイルをドラッグ</p>
-          </div>
-          <div className="csv-outer" onClick={() => setShow(false)}></div>
-        </>
-      )} */}
     </div>
   )
 }

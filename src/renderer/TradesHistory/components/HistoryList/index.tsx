@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
+import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
 
 import { priceFormatter } from 'renderer/hooks/priceFormatter'
@@ -89,6 +90,7 @@ const stickyStyles = {
 
 /** 履歴リスト */
 export const HistoryList = () => {
+  const [listPeriod, setListPeriod] = useState(new Date())
   const [listTrades, setListTrades] = useState<TradeRecordRaw[]>([])
   const [hoverTrade, setHoverTrade] = useState<TradeRecordRaw | null>(null)
   const selectedTrades = useSelectedTrades()
@@ -103,10 +105,31 @@ export const HistoryList = () => {
         if (trades.length) {
           console.log(trades)
           setChartsTrades(trades[0].id)
-          setListPeriod(trades[0].date)
+          setTradesAndPeriod(new Date(trades[0].date))
         }
       })
   }, [])
+
+  const setTradesAndPeriod = (date: Date) => {
+    setListPeriod(date)
+    const period1 = new Date(date)
+    period1.setDate(1)
+    period1.setHours(0, 0)
+    const period2 = new Date(date)
+    period2.setMonth(period2.getMonth() + 1)
+    period2.setDate(0)
+    period2.setHours(23, 59)
+    window.crudAPI
+      .select({
+        mode: 'raw',
+        filter: { period1: period1.getTime(), period2: period2.getTime() },
+      })
+      .then((trades) => {
+        if (trades.length) {
+          setListTrades(trades)
+        }
+      })
+  }
 
   const setChartsTrades = (tradeId: string) => {
     window.crudAPI.select({ mode: 'raw', id: tradeId }).then((trades) => {
@@ -128,26 +151,6 @@ export const HistoryList = () => {
     })
   }
 
-  const setListPeriod = (date: string | number | Date) => {
-    const period1 = new Date(date)
-    period1.setDate(1)
-    period1.setHours(0, 0)
-    const period2 = new Date(date)
-    period2.setMonth(period2.getMonth() + 1)
-    period2.setDate(0)
-    period2.setHours(23, 59)
-    window.crudAPI
-      .select({
-        mode: 'raw',
-        filter: { period1: period1.getTime(), period2: period2.getTime() },
-      })
-      .then((trades) => {
-        if (trades.length) {
-          setListTrades(trades)
-        }
-      })
-  }
-
   const listBackroundColor = (id: string) => {
     return {
       backgroundColor:
@@ -166,13 +169,14 @@ export const HistoryList = () => {
     <div>
       <div style={{ height: '24px', padding: '5px' }}>
         <BaseDatePicker
+          value={dayjs(listPeriod)}
           format="YYYY/M"
           formatDensity="spacious"
           views={['year', 'month']}
           slotProps={{
             calendarHeader: { format: 'YYYY/M' },
           }}
-          onChange={(e) => e && setListPeriod(e.toString())}
+          onChange={(e) => e && setTradesAndPeriod(new Date(e.valueOf()))}
         />
       </div>
       <TableContainer

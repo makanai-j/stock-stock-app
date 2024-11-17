@@ -146,15 +146,11 @@ export class CRUD {
     } else {
       sql = `SELECT 
       t.id, t.date, nt.date as date0, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, 
-      CASE 
-          WHEN t.trade_type IN (?) THEN (nt.price - COALESCE(t.price, 0)) 
-          ELSE (t.price - COALESCE(nt.price, 0)) 
-      END AS gal,
       t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name, t.price as repayTradePrice, nt.price as newTradePrice
       FROM (select * from trades WHERE trade_type IN (?, ?, ?)) as t
       LEFT JOIN trade_links AS tl ON t.id = tl.repay_trade_id
       LEFT JOIN trades AS nt ON tl.new_trade_id = nt.id `
-      params.push('信用返済買', '現物売', '信用返済買', '信用返済売')
+      params.push('現物売', '信用返済買', '信用返済売')
     }
 
     sql += ` LEFT JOIN brand_profiles AS bp ON t.symbol = bp.id

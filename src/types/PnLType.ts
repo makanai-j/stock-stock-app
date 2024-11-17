@@ -1,7 +1,7 @@
-type GALDetails = {
+type PnLDetails = {
   period1: Date
   period2: Date
-  gal: number
+  periodPnL: number
   quantity: number
   tradeNum: number
   gain: number
@@ -10,16 +10,15 @@ type GALDetails = {
   tax: number
 }
 
-type TradeRecordGAL = {
-  //gal: number
+type TradeRecordPnL = {
   date0: Date | string | number
   newTradePrice: number
   repayTradePrice: number
 } & TradeRecordBase
 
-type GALInterval = '1d' | '1w' | '1mo' | '1y'
+type PnLInterval = '1d' | '1w' | '1mo' | '1y'
 
-type EChartsDataGAL = {
+type EChartsDataPnL = {
   xAxisData: string[]
   xAxisData0: string[]
   xAxisData1: string[]

@@ -49,8 +49,6 @@
 .trades-info th,
 .trades-info td {
   padding: 2px 4px;
-  width: fit-content;
-  white-space: nowrap;
 }
 
 .interval-select-outer {

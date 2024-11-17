@@ -1,43 +1,23 @@
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import { MenuItem } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-import {
-  useEChartsOption,
-  useEChartsOptionDispatch,
-} from 'renderer/GainAndLoss/EChartsOptionContext'
-import { useGAL, useGALDispatch } from 'renderer/GainAndLoss/GALContext'
-import { getDayCustom } from 'renderer/GainAndLoss/hooks/getDayCustom'
 import {
   BaseDatePicker,
   IconButtonNormal,
   MySelect,
   QuarterPicker,
 } from 'renderer/MyMui'
+import {
+  useEChartsOption,
+  useEChartsOptionDispatch,
+} from 'renderer/ProfitAndLoss/EChartsOptionContext'
+import { getDayCustom } from 'renderer/ProfitAndLoss/hooks/getDayCustom'
 
-export const GALHeader = (props: { toggle: () => void }) => {
+export const PnLHeader = (props: { toggle: () => void }) => {
   const eChartsOption = useEChartsOption()
   const eChartsOptionDispatch = useEChartsOptionDispatch()
-  const galDispatch = useGALDispatch()
-
-  const fetchTrades = () => {
-    window.crudAPI
-      .select({
-        mode: 'gal',
-      })
-      .then((trades) => {
-        if (!trades.length) return
-
-        galDispatch?.({ trade: trades })
-        eChartsOptionDispatch?.({
-          type: 'setDate',
-          date: new Date(trades[trades.length - 1].date),
-        })
-      })
-  }
-
-  useEffect(fetchTrades, [])
 
   return (
     <div
@@ -54,7 +34,7 @@ export const GALHeader = (props: { toggle: () => void }) => {
           eChartsOptionDispatch &&
           eChartsOptionDispatch({
             type: 'setInterval',
-            interval: e.target.value as GALInterval,
+            interval: e.target.value as PnLInterval,
           })
         }
         sx={{ marginLeft: '3px', marginRight: '6px' }}
@@ -84,13 +64,31 @@ export const GALHeader = (props: { toggle: () => void }) => {
 
 const SwitchDatePicker = () => {
   const eChartsOption = useEChartsOption()
-  const tradesGAL = useGAL()
   const eChartsOptionDispatch = useEChartsOptionDispatch()
+  const [minDate, setMinDate] = useState(dayjs(new Date()))
+  const [maxDate, setMaxDate] = useState(dayjs(new Date()))
 
-  if (!tradesGAL?.length) return <div></div>
+  useEffect(() => {
+    // min
+    window.crudAPI
+      .select({ mode: 'PnL', limit: 1, order: 'ASC' })
+      .then((trades) => {
+        if (trades.length) setMinDate(dayjs(trades[0].date))
+        else {
+          const d = dayjs(minDate)
+          d.set('year', minDate.get('year') - 30)
+        }
+      })
+      .catch((e) => console.log(e))
 
-  const min = new Date(tradesGAL[0].date)
-  const max = new Date(tradesGAL[tradesGAL.length - 1].date)
+    // max
+    window.crudAPI
+      .select({ mode: 'PnL', limit: 1, order: 'DESC' })
+      .then((trades) => {
+        if (trades.length) setMaxDate(dayjs(trades[0].date))
+      })
+      .catch((e) => console.log(e))
+  }, [])
 
   const changeFunc = (e: Dayjs) => {
     eChartsOptionDispatch &&
@@ -112,19 +110,19 @@ const SwitchDatePicker = () => {
             calendarHeader: { format: 'YYYY / M' },
           }}
           onChange={(day) => day && changeFunc(day)}
-          minDate={dayjs(min)}
-          maxDate={dayjs(max)}
+          minDate={minDate}
+          maxDate={maxDate}
           value={dayjs(eChartsOption.date)}
         />
       )
     case '1w':
-      min.setDate(min.getDate() - getDayCustom(min))
-      max.setDate(max.getDate() - getDayCustom(max))
+      minDate.set('date', minDate.get('date') - getDayCustom(minDate.valueOf()))
+      maxDate.set('date', maxDate.get('date') - getDayCustom(maxDate.valueOf()))
       return (
         <QuarterPicker
           onChange={(day) => day && changeFunc(day)}
-          minDate={dayjs(min)}
-          maxDate={dayjs(max)}
+          minDate={dayjs(minDate)}
+          maxDate={dayjs(maxDate)}
           value={dayjs(eChartsOption.date)}
         />
       )
@@ -140,8 +138,8 @@ const SwitchDatePicker = () => {
             calendarHeader: { format: 'YYYY' },
           }}
           onChange={(day) => day && changeFunc(day)}
-          minDate={dayjs(min)}
-          maxDate={dayjs(max)}
+          minDate={minDate}
+          maxDate={maxDate}
           value={dayjs(eChartsOption.date)}
         />
       )

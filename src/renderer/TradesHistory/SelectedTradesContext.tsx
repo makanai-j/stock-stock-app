@@ -19,10 +19,7 @@ function SelectedTradesReducer(
 }
 
 export function SelectedTradesProvider({ children }: { children: any }) {
-  const [SelectedTrades, dispach] = useReducer(
-    SelectedTradesReducer,
-    [] as TradeRecordRaw[]
-  )
+  const [SelectedTrades, dispach] = useReducer(SelectedTradesReducer, [])
 
   return (
     <div>

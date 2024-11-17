@@ -69,7 +69,7 @@ type trade_data_key =
   | 'tax'
 
 /**
- * @mode raw: 売り買いの履歴そのまま。gal: 集計。
+ * @mode raw: 売り買いの履歴そのまま。PnL: 集計。
  * @id 履歴のid。指定した場合、filterは無視される
  * @limit 取得するレコードの数
  * @period1 開始日
@@ -82,7 +82,7 @@ type trade_data_key =
  * @businessCode 業種コード
  */
 type SelectFilterOptions = ModeFilterOptions & BaseFilterOptions
-type ModeFilterOptions = { mode: 'raw' } | { mode: 'gal' }
+type ModeFilterOptions = { mode: 'raw' } | { mode: 'PnL' }
 type BaseFilterOptions = {
   id?: string
   limit?: number

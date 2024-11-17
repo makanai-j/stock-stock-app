@@ -7,8 +7,8 @@ import { getDayCustom } from './getDayCustom'
  * @param date2
  * @returns
  */
-export const isInSameShortPeriod = (
-  interval: GALInterval,
+export const isInSameInterval = (
+  interval: PnLInterval,
   date1: Date,
   date2: Date
 ) => {
@@ -40,8 +40,8 @@ export const isInSameShortPeriod = (
  * @param date2
  * @returns
  */
-export const isInSameLongPeriod = (
-  interval: GALInterval,
+export const isInSamePeriod = (
+  interval: PnLInterval,
   date1: Date,
   date2: Date
 ) => {

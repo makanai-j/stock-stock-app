@@ -1,7 +1,7 @@
-export const getGAL = (tradeGal: TradeRecordGAL) => {
+export const getPnL = (tradePnL: TradeRecordPnL) => {
   const digit = 100
-  const { tradeType } = tradeGal
-  let { newTradePrice, repayTradePrice } = tradeGal
+  const { tradeType } = tradePnL
+  let { newTradePrice, repayTradePrice } = tradePnL
 
   // 浮動小数点の演算誤差を修正するため切り捨て
   newTradePrice = Math.floor(newTradePrice * digit)
@@ -11,5 +11,5 @@ export const getGAL = (tradeGal: TradeRecordGAL) => {
     tradeType == '信用返済買' || tradeType == '信用新規売'
       ? newTradePrice - repayTradePrice
       : repayTradePrice - newTradePrice
-  return (priceDiff / digit) * tradeGal.quantity - (tradeGal.fee + tradeGal.tax)
+  return (priceDiff / digit) * tradePnL.quantity - (tradePnL.fee + tradePnL.tax)
 }

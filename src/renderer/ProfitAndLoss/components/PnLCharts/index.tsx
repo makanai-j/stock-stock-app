@@ -1,8 +1,7 @@
 import * as echarts from 'echarts'
 import { useEffect, useRef, useState } from 'react'
 
-import { useEChartsOption } from 'renderer/GainAndLoss/EChartsOptionContext'
-import { useGAL } from 'renderer/GainAndLoss/GALContext'
+import { useEChartsOption } from 'renderer/ProfitAndLoss/EChartsOptionContext'
 
 import {
   initialEchartsOption,
@@ -17,9 +16,12 @@ import { toEChartsData } from './chart/toEChartsData'
 /**
  * 損益のチャート
  */
-export const GALChart = () => {
+export const PnLChart = ({
+  groupedByPeriodPnL,
+}: {
+  groupedByPeriodPnL: TradeRecordPnL[][][]
+}) => {
   const chartRef = useRef<HTMLDivElement>(null)
-  const tradesGAL = useGAL()
   const eChartsOption = useEChartsOption()
   let myCharts: echarts.ECharts
 
@@ -33,7 +35,7 @@ export const GALChart = () => {
   const [otherChartsHeight, setHeight] = useState(getOtherHeight())
 
   useEffect(() => {
-    let eChartsData: EChartsDataGAL = {
+    let eChartsData: EChartsDataPnL = {
       xAxisData: [],
       xAxisData0: [],
       xAxisData1: [],
@@ -42,9 +44,9 @@ export const GALChart = () => {
     }
 
     myCharts = echarts.init(chartRef.current)
-    if (tradesGAL && eChartsOption)
+    if (eChartsOption)
       eChartsData = toEChartsData(
-        tradesGAL,
+        groupedByPeriodPnL,
         eChartsOption.date,
         eChartsOption.interval
       )

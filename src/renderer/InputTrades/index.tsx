@@ -1,5 +1,7 @@
 import { Button } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+import { formatToDateTime } from 'renderer/TradesHistory/hooks/formatToTime'
 
 import { AddRecordTable } from './components/AddRecordTable'
 import { CSVInmport } from './components/CSVImport'
@@ -44,25 +46,57 @@ const NewAddChild = () => {
     })
   }
 
+  function setResultMessage(props: {
+    result: 'fail'
+    trade?: TradeRecord
+  }): void
+  function setResultMessage(props: {
+    result: 'succeed'
+    recordNum: number
+  }): void
+  function setResultMessage(
+    props:
+      | { result: 'fail'; trade?: TradeRecord }
+      | { result: 'succeed'; recordNum: number }
+  ) {
+    if (props.result === 'fail') {
+      const recordSummary =
+        typeof props.trade === 'object'
+          ? `(${formatToDateTime(props.trade.date)} <strong>${props.trade.symbol}</strong>)`
+          : ''
+      setMessage(
+        `<p style='color: #FAD02C'>保存に失敗しました${recordSummary}</p>`
+      )
+    } else {
+      setMessage(
+        `<p style='color: white'>${props.recordNum}件の取引を保存しました</p>`
+      )
+    }
+  }
+
   const insert = () => {
     if (!ableInsert) return
     setAbleInsert(false)
     resetMessage()
+
+    const trades = flatTrades()
     window.crudAPI
-      .insert(flatTrades())
+      .insert(trades)
       .then(() => {
         console.log('insert resolve')
         dispatch && dispatch({ type: 'reset' })
         setAbleInsert(true)
-        window.crudAPI.select({ mode: 'raw' }).then((data) => {
-          console.log(data)
-        })
+        setResultMessage({ result: 'succeed', recordNum: trades.length })
       })
       .catch((err) => {
-        setMessage(`入力内容に誤りがあります`)
         setAbleInsert(true)
         if (err && err.failId) {
-          // failid
+          trades.forEach((trade) => {
+            if (trade.id == err.failId)
+              setResultMessage({ result: 'fail', trade })
+          })
+        } else {
+          setResultMessage({ result: 'fail' })
         }
       })
   }
@@ -91,8 +125,8 @@ const NewAddChild = () => {
         >
           保存
         </Button>
-        <CSVInmport setFailMessage={setMessage} />
-        <FailMessage message={message} reset={resetMessage} />
+        <CSVInmport setResultMessage={setResultMessage} />
+        <HeadMessage message={message} reset={resetMessage} />
       </div>
       <AddRecordTable tradeGroups={tradeGroups} />
       <div
@@ -126,12 +160,14 @@ const NewAddChild = () => {
   )
 }
 
-const FailMessage = (props: { message: string; reset: () => void }) => {
+const HeadMessage = (props: { message: string; reset: () => void }) => {
+  const messageRef = useRef<HTMLDivElement>(null)
   const [opacity, setOpacity] = useState(1)
 
   useEffect(() => {
     let timeoutId2: NodeJS.Timeout
 
+    if (messageRef.current) messageRef.current.innerHTML = props.message
     setOpacity(1)
 
     const timeoutId1 = setTimeout(() => {
@@ -150,15 +186,13 @@ const FailMessage = (props: { message: string; reset: () => void }) => {
 
   return (
     <div
+      ref={messageRef}
       style={{
         fontSize: '11px',
         margin: 'auto',
-        color: '#FAD02C',
         opacity,
         transition: 'opacity 0.3s',
       }}
-    >
-      {props.message}
-    </div>
+    ></div>
   )
 }

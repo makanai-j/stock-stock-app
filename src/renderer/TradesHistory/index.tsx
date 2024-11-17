@@ -1,4 +1,8 @@
 //import { isIntervalString, YFOptions } from '../../types/yfTypes'
+import { MenuItem, SelectChangeEvent } from '@mui/material'
+
+import { MySelect } from 'renderer/MyMui'
+
 import { FinanceChart } from './components/FinanceCharts'
 import { HistoryList } from './components/HistoryList'
 import { TradesInfo } from './components/TradesInfo'
@@ -14,9 +18,6 @@ import {
 } from './YFOptionsContext'
 
 import './index.css'
-import { MySelect } from 'renderer/MyMui'
-
-import { MenuItem, SelectChangeEvent } from '@mui/material'
 
 /**
  * 履歴画面のページ
@@ -64,7 +65,7 @@ const Chart = () => {
 
   return (
     <div>
-      {trades?.length ? (
+      {!!trades?.length && (
         <div className="charts-outer">
           <TradesInfo trades={trades} />
           <MySelect
@@ -83,8 +84,6 @@ const Chart = () => {
           </MySelect>
           <FinanceChart />
         </div>
-      ) : (
-        <div>no data</div>
       )}
     </div>
   )

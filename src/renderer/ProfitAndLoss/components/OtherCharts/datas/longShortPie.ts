@@ -1,6 +1,6 @@
-import { getGAL } from 'renderer/GainAndLoss/hooks/getGAL'
+import { getPnL } from 'renderer/ProfitAndLoss/hooks/getPnL'
 
-export const toLongShortPie = (tradeGals: TradeRecordGAL[][]) => {
+export const toLongShortPie = (tradePnLs: TradeRecordPnL[][]) => {
   const data: {
     name: string
     value: number
@@ -28,11 +28,11 @@ export const toLongShortPie = (tradeGals: TradeRecordGAL[][]) => {
     },
   ]
 
-  for (const trades of tradeGals) {
+  for (const trades of tradePnLs) {
     for (const trade of trades) {
       const { tradeType } = trade
 
-      const amount = getGAL(trade)
+      const amount = getPnL(trade)
 
       if (tradeType === '現物売' || tradeType === '信用返済売') {
         if (amount > 0) {

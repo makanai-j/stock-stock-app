@@ -40,7 +40,7 @@ export interface ICrudAPI {
     options: T
   ) => T extends { mode: 'raw' }
     ? Promise<TradeRecordRaw[]>
-    : Promise<TradeRecordGAL[]>
+    : Promise<TradeRecordPnL[]>
 
   /**
    * 履歴の変更
