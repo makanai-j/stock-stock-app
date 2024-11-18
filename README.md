@@ -73,6 +73,14 @@ npm run start
 | fix      | import 部分修正      |
 | format   | コードフォーマット   |
 
+> [!WARNING]
+>
+> ```
+> npm run make
+> ```
+>
+> は、クローンしたディレクトリへのパスにローマ字以外(一部記号除く)が含まれているとエラーが出ます
+
 ## 操作方法
 
 [stockstock 操作マニュアル](https://makanai-j.github.io/stock-stock.github.io/?version=a1b2c3d)
