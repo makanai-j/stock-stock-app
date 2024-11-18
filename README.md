@@ -26,26 +26,6 @@
 
 ## はじめる
 
-### ビルド
-
-クローン
-
-```
-git clone https://github.com/makanai-j/stock-stock-app.git
-```
-
-依存関係インストール
-
-```
-npm install
-```
-
-ビルドスタート
-
-```
-npm run start
-```
-
 ### 前提条件
 
 node.js
@@ -55,7 +35,28 @@ node.js
 
 [node.js install](https://nodejs.org/en/download/package-manager)
 
-## 使用法
+### ビルド
+
+以下コマンドを順番に実行
+
+```
+# クローン
+git clone https://github.com/makanai-j/stock-stock-app.git
+```
+
+```
+# 依存関係インストール
+npm install
+```
+
+```
+# ビルドスタート
+npm run start
+```
+
+## 操作方法
+
+[stockstock 操作マニュアル](https://makanai-j.github.io/stock-stock.github.io/?version=a1b2c3d)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
