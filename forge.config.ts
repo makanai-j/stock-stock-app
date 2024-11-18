@@ -10,7 +10,10 @@ import { rendererConfig } from './webpack.renderer.config'
 import type { ForgeConfig } from '@electron-forge/shared-types'
 
 const config: ForgeConfig = {
-  packagerConfig: {},
+  packagerConfig: {
+    name: 'stockstock',
+    icon: './src/assets/stockstockicon',
+  },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),

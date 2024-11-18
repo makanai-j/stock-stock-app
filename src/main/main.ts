@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
+import * as path from 'path'
 
 import { CRUD } from './db/crud'
 import { objectToCamelCase, objectToSnakeCase } from './db/dbHooks'
@@ -19,6 +20,7 @@ if (require('electron-squirrel-startup')) {
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    title: 'ss',
     height: 600,
     width: 800,
     minWidth: 600,
@@ -28,8 +30,19 @@ const createWindow = (): void => {
     },
   })
 
+  const setWinTitle = () => {
+    if (mainWindow) {
+      mainWindow.title = `stockstock`
+      mainWindow.setIcon(path.join(__dirname, 'src/assets/icon.ico'))
+    }
+    return true
+  }
+
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  mainWindow
+    .loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+    .then(setWinTitle)
+    .catch((e) => console.log(e))
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
