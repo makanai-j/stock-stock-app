@@ -18,8 +18,6 @@ if (require('electron-squirrel-startup')) {
 
 const createWindow = (): void => {
   // Create the browser window.
-  console.log(__dirname)
-  console.log(path.join(__dirname, '/assets/icon.ico'))
   const mainWindow = new BrowserWindow({
     title: 'stockstock',
     icon: './src/assets/stockstockicon',
