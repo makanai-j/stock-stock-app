@@ -1,272 +1,263 @@
 /**
- * 約定日,銘柄コード,銘柄名,市場,取引区分,預り区分,約定数量,約定単価,手数料/諸経費等,税額,受渡金額/決済損益,業種
- * table
- *
- * 買いと売りの紐づけはユーザーに任せる
- * 入力時または履歴に紐づけのボタンをつけて、過去の取引から選択させる
- *
- * trade
- * - id: number
- * - date: dateTime
- * - code: number
- * - tradeType: string
- * - holdType: string
- * - quantity: number
- * - restQuantity: number
- * - price: number
- * - fee: number
- * - tax: number
- *
- * tradeLinks
- * - id: number
- * - newTradeId: number
- * - repayTradeId: number
- *
- * brandProfile
- * - id: number
- * - code: number
- * - company: string
- * - marketCode: number
- * - businessType: string
- *
- * marketPlace
- * - id: number
- * - place: string
- * - market: string
  *
  */
-import sqlite3 from 'sqlite3'
+import { TradeDBError } from 'types/TradeError'
+
 import { isNewTradeType, turnedTradeType } from './dbHooks'
+import { db } from './initializeDatabase'
 
-const db = new sqlite3.Database('./stock.db')
-db.run('drop table if exists trades')
-db.run(
-  'CREATE TABLE if not exists trades (' +
-    'id TEXT PRIMARY KEY,' +
-    'date TEXT NOT NULL,' +
-    'code INTEGER NOT NULL,' +
-    'tradeType TEXT NOT NULL,' +
-    'holdType TEXT NOT NULL,' +
-    'quantity INTEGER NOT NULL,' +
-    'restQuantity INTEGER NOT NULL,' +
-    'price REAL NOT NULL,' +
-    'fee REAL NOT NULL,' +
-    'tax REAL NOT NULL)'
-)
+const executeSelectQuery = (
+  sql: string,
+  params: any[] = []
+): Promise<any[]> => {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err.message)
+      resolve(rows)
+    })
+  })
+}
 
-const _insert = async (
-  tradeData: tradeDataObject,
-  updatedIds: string[] = []
-): Promise<any> => {
-  //return new Promise((resolve, reject) => {
-  const insertSellSql = `INSERT INTO trades (id, date, code, tradeType, holdType, quantity, restQuantity, price, fee, tax)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+const executeNonQuery = (sql: string, params: any[] = []): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, (err) => {
+      if (err) return reject(err.message)
+      resolve()
+    })
+  })
+}
 
-  db.run(
-    insertSellSql,
-    [
-      tradeData.id,
-      tradeData.date,
-      tradeData.code,
-      tradeData.tradeType,
-      tradeData.holdType,
-      tradeData.quantity,
-      isNewTradeType(tradeData.tradeType) ? tradeData.quantity : 0,
-      tradeData.price,
-      tradeData.fee,
-      tradeData.tax,
-    ],
-    (err) => {
-      if (err) {
-        console.log('No.2: ', err.message)
-        db.run('ROLLBACK') // エラーがあればロールバック
-        throw new Error(err.message)
-      }
+const _insert = async (trades: TradeRecordDB[]): Promise<void> => {
+  const insertSql = `INSERT INTO trades VALUES ${trades.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(',')}`
+  const insertData = trades.flatMap((trade) => [
+    trade.id,
+    trade.date,
+    trade.symbol,
+    trade.trade_type,
+    trade.hold_type,
+    trade.quantity,
+    trade.quantity,
+    trade.price,
+    trade.fee,
+    trade.tax,
+  ])
 
-      db.run('COMMIT', () => {
-        return CRUD.select([...updatedIds, tradeData.id])
-      })
-    }
-  )
-  //})
+  await executeNonQuery(insertSql, insertData)
 }
 
 export class CRUD {
-  static async insert(tradeData: tradeDataObject): Promise<any> {
-    //return new Promise((resolve, reject) => {
-    db.run('BEGIN TRANSACTION;', (err) => {
-      if (err) {
-        console.log('No.1: ', err.message)
-        db.run('ROLLBACK')
-        throw new Error(err.message)
-      }
+  static async insert(trades: TradeRecordDB[]): Promise<any> {
+    try {
+      await executeNonQuery('BEGIN TRANSACTION')
 
-      // 返済取引の場合は
-      if (!isNewTradeType(tradeData.tradeType)) {
-        const buyTradeSql =
-          'SELECT * ' +
-          'FROM trades ' +
-          'WHERE code = ? ' +
-          'AND tradeType = ? ' +
-          'AND restQuantity > 0 ' + // 既に返済済みは排除
-          'ORDER BY date ASC ' // 古いデータを優先
+      //
+      const newTrades = trades.filter((data) => isNewTradeType(data.trade_type))
+      if (newTrades.length) await _insert(newTrades)
 
-        const updatedIds: string[] = []
+      //
+      const repayTrades = trades
+        .filter((data) => !isNewTradeType(data.trade_type))
+        .sort((trade1, trade2) => trade1.date - trade2.date)
 
-        db.all(
-          buyTradeSql,
-          [tradeData.code, turnedTradeType(tradeData.tradeType)],
-          (err, rows: any[]) => {
-            if (err) {
-              console.error('No.3: ', err.message)
-              db.run('ROLLBACK')
-              throw new Error(err.message)
-            }
+      if (!repayTrades.length) return executeNonQuery('COMMIT')
 
-            let repayQuant = tradeData.quantity
+      const newTradeSql = `
+        SELECT * FROM trades 
+        WHERE date <= ? AND symbol = ? AND trade_type = ? AND rest_quantity > 0 
+        ORDER BY date ASC
+      `
 
-            // 新規取引のデータを回し終わるか、返済数量が0になったら終了
-            for (let i = 0; i < rows.length && repayQuant != 0; i++) {
-              const row = rows[i]
-              console.log(row.date)
-              let rowRestQuantity = row['restQuantity']
+      for (const repayTrade of repayTrades) {
+        const rows: TradeRecordDB[] = await executeSelectQuery(newTradeSql, [
+          repayTrade.date,
+          repayTrade.symbol,
+          turnedTradeType(repayTrade.trade_type),
+        ])
 
-              // 新規取引数量 >= 残り返済取引数量 の場合
-              if (rowRestQuantity >= repayQuant) {
-                rowRestQuantity = rowRestQuantity - repayQuant
-                repayQuant = 0
-                // 残り返済取引数量のほうが多い場合
-              } else {
-                repayQuant = repayQuant - rowRestQuantity
-                rowRestQuantity = 0
-              }
-
-              // 新規取引のrestQuantityを更新
-              const updateBuySql =
-                'UPDATE trades SET restQuantity = ? WHERE id = ? '
-
-              db.run(updateBuySql, [rowRestQuantity, row.id], (err) => {
-                if (err) {
-                  console.log('No.4: ', err.message)
-                  db.run('ROLLBACK') // エラーがあればロールバック
-                  throw new Error(err.message)
-                }
-
-                updatedIds.push(row.id)
-              })
-            }
-
-            // 返済数量が残っていた場合ROLLBACK
-            if (repayQuant) {
-              console.log(
-                'No.6 : ',
-                'No matching buy trade or insufficient restQuantity.'
-              )
-              db.run('ROLLBACK') // 条件を満たさない場合もロールバック
-              throw new Error(
-                '返済取引と合致する新規取引が見つかりませんでした。'
-              )
-            } else {
-              return _insert(tradeData)
-            }
-          }
-        )
-      } else {
-        return _insert(tradeData)
-      }
-    })
-    //})
-  }
-
-  static async select(ids?: string[]): Promise<any> {
-    return new Promise((resolev, reject) => {
-      let selectSql = 'SELECT * FROM trades '
-      if (ids) {
-        // プレースホルダーを配列の長さに合わせて生成
-        const placeholders = ids.map(() => '?').join(',')
-        selectSql += `WHERE id IN (${placeholders})`
-      }
-      selectSql += ' ORDER BY date DESC '
-      db.all(selectSql, ids, (err, row) => {
-        if (err) return reject(err)
-        resolev(row)
-      })
-    })
-  }
-
-  static async update(data: any): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!data.id) {
-        return reject('データタイプが違います')
-      }
-
-      const updateData: any[] = []
-      let updateSql = 'UPDATE trades SET '
-      const fields: string[] = []
-
-      // フィールドごとに更新データを準備
-      if (data.date) {
-        updateData.push(data.date)
-        fields.push('date = ?')
-      }
-      if (data.code) {
-        updateData.push(data.code)
-        fields.push('code = ?')
-      }
-      if (data.tradeType) {
-        updateData.push(data.tradeType)
-        fields.push('tradeType = ?')
-      }
-      if (data.holdType) {
-        updateData.push(data.holdType)
-        fields.push('holdType = ?')
-      }
-      if (data.quantity) {
-        updateData.push(data.quantity)
-        fields.push('quantity = ?')
-      }
-      if (data.price) {
-        updateData.push(data.price)
-        fields.push('price = ?')
-      }
-      if (data.fee) {
-        updateData.push(data.fee)
-        fields.push('fee = ?')
-      }
-      if (data.tax) {
-        updateData.push(data.tax)
-        fields.push('tax = ?')
-      }
-
-      // 更新するフィールドがなければエラー
-      if (fields.length === 0) {
-        return reject('更新データが見つかりませんでした')
-      }
-
-      // SQLクエリにWHERE句を追加してidで更新
-      updateSql += fields.join(', ') + ' WHERE id = ?'
-      updateData.push(data.id)
-
-      db.run(updateSql, updateData, (err) => {
-        if (err) {
-          console.log(err.message)
-          return reject(err.message)
+        if (repayTrade.symbol == '7013') {
+          console.log(repayTrade)
+          console.log(rows)
         }
-        resolve()
-      })
-    })
+
+        let repayQuant = repayTrade.quantity
+        const tradesToUpdate: TradeRecordDB[] = []
+        const linksParams: (string | number)[] = []
+
+        for (const row of rows) {
+          if (repayQuant === 0) break
+
+          let rowRestQuantity = row.rest_quantity
+
+          if (rowRestQuantity >= repayQuant) {
+            rowRestQuantity -= repayQuant
+            repayQuant = 0
+          } else {
+            repayQuant -= rowRestQuantity
+            rowRestQuantity = 0
+          }
+
+          tradesToUpdate.push({
+            ...row,
+            rest_quantity: rowRestQuantity,
+          })
+
+          linksParams.push(
+            row.id,
+            repayTrade.id,
+            row.rest_quantity - rowRestQuantity
+          )
+        }
+
+        if (repayQuant) {
+          console.log(rows)
+          throw new TradeDBError(repayTrade.id, '取引数量が合っていません')
+        }
+
+        await CRUD.update(tradesToUpdate, ['rest_quantity'])
+
+        // trade_links
+        const insertLinksSql = `INSERT INTO trade_links (new_trade_id, repay_trade_id, trade_quantity) VALUES ${tradesToUpdate.map(() => '(?,?,?)').join(',')}`
+
+        executeNonQuery(insertLinksSql, linksParams)
+
+        await _insert([repayTrade])
+      }
+      await executeNonQuery('COMMIT')
+    } catch (err) {
+      await executeNonQuery('ROLLBACK')
+      if (err instanceof TradeDBError) return { failId: err.failId }
+      throw err
+    }
   }
 
-  static async delete(ids: [string, ...string[]]): Promise<void> {
-    new Promise((resolev, reject) => {
-      // プレースホルダーを配列の長さに合わせて生成
-      const placeholders = ids.map(() => '?').join(',')
-      const deleteSql = `DELETE FROM trades WHERE id IN (${placeholders})`
+  /**
+   *
+   * @param options
+   * @returns
+   */
+  static async select(options: SelectFilterOptions): Promise<any[]> {
+    let sql = ''
+    const params: any[] = []
 
-      db.all(deleteSql, ids, (err, row) => {
-        if (err) return reject(err)
-        resolev(row)
-      })
-    })
+    if (options.mode == 'raw') {
+      sql = `SELECT 
+      t.id, t.date, t.symbol, bp.company, t.trade_type, t.hold_type, t.quantity, t.rest_quantity, t.price, t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name
+      FROM trades AS t `
+    } else {
+      sql = `SELECT 
+      t.id, t.date, nt.date as date0, t.symbol, bp.company, t.trade_type, tl.trade_quantity as quantity, 
+      t.fee, t.tax, mp.place, mp.place_y_f, mp.market, bt.id as business_type_code, bt.type as business_type_name, t.price as repayTradePrice, nt.price as newTradePrice
+      FROM (select * from trades WHERE trade_type IN (?, ?, ?)) as t
+      LEFT JOIN trade_links AS tl ON t.id = tl.repay_trade_id
+      LEFT JOIN trades AS nt ON tl.new_trade_id = nt.id `
+      params.push('現物売', '信用返済買', '信用返済売')
+    }
+
+    sql += ` LEFT JOIN brand_profiles AS bp ON t.symbol = bp.id
+    LEFT JOIN market_places AS mp ON bp.market_id = mp.id
+    LEFT JOIN business_type_33 AS bt ON bp.business_id = bt.id
+    WHERE 1=1 ` // 1=1について https://qiita.com/seiya2130/items/a34f5492592b103e2545
+
+    if (options.id) {
+      if (options.mode == 'raw') {
+        sql += ` AND (t.id = ? OR
+          t.id IN (SELECT tl.new_trade_id FROM trade_links AS tl WHERE tl.repay_trade_id = ?) OR 
+          t.id IN (SELECT tl.repay_trade_id FROM trade_links AS tl WHERE tl.new_trade_id = ?))`
+        params.push(options.id, options.id, options.id)
+      } else {
+        sql += ` AND t.id = ?`
+        params.push(options.id)
+      }
+    } else {
+      if (options.filter?.period1) {
+        sql += ` AND t.date >= ?`
+        params.push(options.filter?.period1)
+      }
+      if (options.filter?.period2) {
+        sql += ` AND t.date <= ?`
+        params.push(options.filter?.period2)
+      }
+
+      if (options.filter?.symbol) {
+        sql += ` AND t.symbol = ?`
+        params.push(options.filter?.symbol)
+      }
+
+      if (options.filter?.tradeType) {
+        sql += ` AND t.trade_type = ?`
+        params.push(options.filter?.tradeType)
+      }
+
+      if (options.filter?.holdType) {
+        sql += ` AND t.hold_type = ?`
+        params.push(options.filter?.holdType)
+      }
+
+      if (options.filter?.price) {
+        if (options.filter?.price.Lowest) {
+          sql += ` AND t.price >= ?`
+          params.push(options.filter?.price.Lowest)
+        }
+        if (options.filter?.price.Highest) {
+          sql += ` AND t.price <= ?`
+          params.push(options.filter?.price.Highest)
+        }
+      }
+
+      if (options.filter?.place) {
+        sql += ` AND mp.place = ?`
+        params.push(options.filter?.place)
+      }
+
+      if (options.filter?.businessCode) {
+        sql += ` AND bp.business_id = ?`
+        params.push(options.filter?.businessCode)
+      }
+    }
+
+    sql += ` ORDER BY t.date ${options.order ? options.order : 'ASC'} ${options.limit ? `LIMIT ${options.limit}` : ''}`
+
+    return await executeSelectQuery(sql, params)
+  }
+
+  static async update(
+    trades: TradeRecordDB[],
+    updateFields: [trade_data_key, ...trade_data_key[]] = [
+      'date',
+      'symbol',
+      'trade_type',
+      'hold_type',
+      'quantity',
+      'rest_quantity',
+      'price',
+      'fee',
+      'tax',
+    ]
+  ): Promise<void> {
+    if (!trades.length) return
+
+    const params: any[] = []
+
+    const updateCaseClause = (field: trade_data_key) => {
+      return `${field} = CASE id ${trades
+        .map((trade) => {
+          params.push(trade.id, trade[field])
+          return ` WHEN ? THEN ? `
+        })
+        .join(' ')} END`
+    }
+
+    const placeholders = updateFields.map(updateCaseClause).join(',')
+    const updateSql = `UPDATE trades SET ${placeholders} WHERE id IN (${trades.map(() => '?').join(',')})`
+
+    params.push(...trades.map((trade) => trade.id))
+
+    await executeNonQuery(updateSql, params)
+  }
+
+  static async delete(ids: string[]): Promise<void> {
+    const placeholders = ids.map(() => '?').join(',')
+    const deleteSql = `DELETE FROM trades WHERE id IN (${placeholders})`
+    await executeNonQuery(deleteSql, ids)
   }
 }

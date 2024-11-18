@@ -1,22 +1,23 @@
-import History from '../history'
-import { NewAdd } from 'renderer/new-add'
+import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 
-const App = () => {
-  const fileR = () => {
-    window.electronAPI
-      .fileRead()
-      .then((data) => {
-        console.log(data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }
+import { InputTrades } from 'renderer/InputTrades'
+import { GainAndLoss } from 'renderer/ProfitAndLoss'
+import { TradesHistory } from 'renderer/TradesHistory'
 
+import { Header } from './components/Header'
+
+export const App = () => {
   return (
-    <div>
-      <NewAdd></NewAdd>
-    </div>
+    <main style={{ height: '100vh' }}>
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" Component={GainAndLoss} />
+          <Route path="/history" Component={TradesHistory} />
+          <Route path="/input" Component={InputTrades} />
+        </Routes>
+      </Router>
+    </main>
   )
 }
 

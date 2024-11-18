@@ -1,24 +1,37 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  /**
-   * メインプロセスへ株式データを要求
-   *
-   * @param symbol - 銘柄コード
-   * @param options - 足の間隔, 開始日時
-   */
   financeData: async (symbol: string, options: YFOptions) =>
     await ipcRenderer.invoke('chart', { symbol, options }),
-  /**
-   * メインプロセスへcsvファイルの読み込みを要求
-   *
-   * @returns csvファイルのデータ
-   */
   fileRead: async () => await ipcRenderer.invoke('fileRead'),
-  insert: async (tradeDatas: tradeDataObject[]) =>
-    await ipcRenderer.invoke('insert', tradeDatas),
-  select: async (id?: number) => ipcRenderer.invoke('select', id),
-  update: async (id: number, tradeData: tradeDataObject) =>
-    ipcRenderer.invoke('update', id, tradeData),
-  delete: async (id: number) => ipcRenderer.invoke('delete', id),
 })
+
+contextBridge.exposeInMainWorld('crudAPI', {
+  insert: async (tradeDatas: TradeRecord[]) => {
+    /**
+     * メインプロセスからのエラーはelectronによってラップされ、
+     * カスタムエラーを返すことができない。
+     * なので、特定のオブジェクトをかえし、レンダラーで判断するしかない。
+     * ここでは
+     * {failId: string}
+     * というオブジェクトを返している
+     */
+    const result = await ipcRenderer.invoke('insert', tradeDatas)
+    if (isRejectedPromise(result)) {
+      throw result
+    }
+  },
+  select: (options: SelectFilterOptions) => {
+    return ipcRenderer.invoke('select', options)
+  },
+  update: (trades: TradeRecord) => {
+    ipcRenderer.invoke('update', trades)
+  },
+  delete: (ids: string[]) => ipcRenderer.invoke('delete', ids),
+})
+
+const isRejectedPromise = (response: any) => {
+  if (response === undefined) return false
+  else if (response.failId) return true
+  else return false
+}

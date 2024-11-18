@@ -1,0 +1,193 @@
+/* paper */
+.MuiPaper-root {
+  color: white;
+  background-color: #547;
+  font-size: 12px;
+}
+
+/* outer month calendar */
+.css-wvbfxi-MuiMonthCalendar-root {
+  width: 220px;
+  padding: 0;
+}
+
+/* outer month calendar */
+.MuiMonthCalendar-root,
+/* outer year valendar */
+.MuiYearCalendar-root {
+  width: 222px;
+  overflow-y: scroll;
+  /* IE, Edge 対応 */
+  -ms-overflow-style: none;
+  /* Firefox 対応 */
+  scrollbar-width: none;
+}
+
+/*　outer calendar */
+.MuiDateCalendar-root {
+  width: 222px;
+  overflow: hidden;
+}
+
+/*　outer calendar */
+.css-5wchs2-MuiDateCalendar-root,
+/* outer day calendar */
+.css-11yms7-MuiDateCalendar-root
+
+/* outer year valendar 
+.css-th0wnz-MuiYearCalendar-root*/
+  {
+  height: 310px;
+}
+
+/* inner year calendar */
+.css-hwynws-MuiPickersFadeTransitionGroup-root-MuiDateCalendar-viewTransitionContainer>div {
+  height: 254px;
+}
+
+/* month */
+.css-gexdxk-MuiPickersMonth-root {
+  height: 50px;
+}
+
+/* year button */
+.css-innj4t-MuiPickersYear-yearButton {
+  width: 70px;
+}
+
+.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
+  height: 310px;
+  overflow-y: scroll;
+  /* IE, Edge 対応 */
+  -ms-overflow-style: none;
+  /* Firefox 対応 */
+  scrollbar-width: none;
+}
+
+/* Chrome, Safari 対応 */
+.MuiMultiSectionDigitalClock-root css-8fykvn-MuiMultiSectionDigitalClock-root ul {
+  display: none;
+}
+
+/* calendarHeader */
+.css-1nxbkmn-MuiPickersCalendarHeader-root {
+  padding-left: 15px;
+  position: -webkit-sticky;
+  position: sticky;
+}
+
+/*
+DayCalendar dayButton
+*/
+/* .css-4k4mmf-MuiButtonBase-root-MuiPickersDay-root,
+.css-1ayjnp4-MuiPickersDay-root,
+.button.MuiPickersDay-root.Mui-selected,
+.css-qct7wd-MuiButtonBase-root-MuiPickersDay-root.Mui-selected,
+.css-qct7wd-MuiButtonBase-root-MuiPickersDay-root:focus.Mui-selected,
+.css-qct7wd-MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected),
+.css-17f9e7e-MuiTypography-root-MuiDayCalendar-weekDayLabel {
+  width: 29px;
+  height: 29px;
+  margin: 1px;
+  color: white;
+} */
+
+/* ほとんどのボタン */
+.MuiButtonBase-root,
+/* week day text */
+.MuiTypography-root {
+  color: white;
+}
+
+/* .MuiPickersDay-root,
+.button.MuiPickersDay-root.Mui-selected,
+.MuiButtonBase-root.Mui-selected,
+.MuiPickersDay-root.Mui-selected,
+.MuiButtonBase-root:focus.Mui-selected,
+.MuiPickersDay-root:focus.Mui-selected,
+.MuiButtonBase-root:not(.Mui-selected),
+.MuiPickersDay-root:not(.Mui-selected),
+.MuiTypography-root {
+  color: white;
+} */
+
+
+.MuiDayCalendar-weekDayLabel,
+.button.MuiPickersDay-root.Mui-selected,
+.MuiPickersDay-root.Mui-selected,
+.MuiPickersDay-root:focus.Mui-selected,
+.MuiPickersDay-root:not(.Mui-selected) {
+  height: 30px;
+  width: 29px;
+  margin: 1px;
+}
+
+/* .MuiDayCalendar-monthContainer .MuiButtonBase-root,
+.MuiPickersSlideTransition-slideEnter-left .MuiButtonBase-root,
+.MuiPickersSlideTransition-slideEnterActive .MuiButtonBase-root {
+
+  width: 29px;
+  height: 29px;
+  margin: 0 1px;
+  color: white;
+} */
+
+/* selected date border */
+.css-qct7wd-MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected) {
+  border-color: #aaa;
+}
+
+/* innner day calendar */
+.css-1n1xn3x-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition,
+.css-1n1xn3x-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition {
+  height: 210px;
+  min-height: 210px;
+}
+
+/* Time scroll bar */
+.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
+  width: 40px;
+}
+
+/* clock */
+.MuiMultiSectionDigitalClockSection-item {
+  width: 32px;
+  padding: 10px;
+  margin: 4px;
+}
+
+/* textfield */
+.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root {
+  height: 24px;
+}
+
+.css-elo8k2-MuiInputAdornment-root {
+  margin-left: 0;
+}
+
+.css-4pv4i0-MuiFormControl-root-MuiTextField-root .MuiInputBase-input,
+.css-1bs8i4o-MuiFormControl-root-MuiTextField-root .MuiInputBase-input {
+  padding: 5px;
+}
+
+.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 0;
+}
+
+.css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 0;
+}
+
+.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: transparent;
+}
+
+/* textfield calendar button */
+.css-oeq6yz-MuiButtonBase-root-MuiIconButton-root {
+  padding: 3px;
+}
+
+/* select */
+.MuiMenuItem-root {
+  font-size: 11px;
+}
