@@ -22,7 +22,7 @@ const createWindow = (): void => {
   console.log(__dirname)
   console.log(path.join(__dirname, '/assets/icon.ico'))
   const mainWindow = new BrowserWindow({
-    icon: '../assets/icon.ico',
+    title: 'ss',
     height: 600,
     width: 800,
     minWidth: 600,
@@ -32,8 +32,19 @@ const createWindow = (): void => {
     },
   })
 
+  const setWinTitle = () => {
+    if (mainWindow) {
+      mainWindow.title = `stockstock`
+      mainWindow.setIcon(path.join(__dirname, 'src/assets/icon.ico'))
+    }
+    return true
+  }
+
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  mainWindow
+    .loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+    .then(setWinTitle)
+    .catch((e) => console.log(e))
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
