@@ -4,6 +4,7 @@ import { OtherCharts } from './components/OtherCharts'
 import { PnLChart } from './components/PnLCharts'
 import { PnLHeader } from './components/PnLHeader'
 import { PnLList } from './components/PnLList'
+import { PnLSummary } from './components/PnLSummary'
 import {
   EChartsOptionProvider,
   useEChartsOption,
@@ -14,7 +15,6 @@ import { findIntervalPnLByDate } from './hooks/findIntervalPnLByDate'
 import { getPnL } from './hooks/getPnL'
 //import { PnLProvider } from './PnLContext'
 import './index.css'
-import { PnLSummary } from './components/PnLSummary'
 
 export const GainAndLoss = () => {
   return (
