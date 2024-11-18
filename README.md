@@ -30,20 +30,20 @@
 
 クローン
 
-```bash
-$ git clone https://github.com/makanai-j/stock-stock-app.git
+```
+git clone https://github.com/makanai-j/stock-stock-app.git
 ```
 
 依存関係インストール
 
-```bash
-$ npm install
+```
+npm install
 ```
 
 ビルドスタート
 
-```bash
-$  npm run start
+```
+npm run start
 ```
 
 ### 前提条件
