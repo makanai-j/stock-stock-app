@@ -125,9 +125,10 @@ export const HistoryList = () => {
         filter: { period1: period1.getTime(), period2: period2.getTime() },
       })
       .then((trades) => {
-        if (trades.length) {
-          setListTrades(trades)
-        }
+        setListTrades(trades)
+      })
+      .catch((e) => {
+        console.log(e)
       })
   }
 
@@ -176,7 +177,7 @@ export const HistoryList = () => {
           slotProps={{
             calendarHeader: { format: 'YYYY/M' },
           }}
-          onChange={(e) => e && setTradesAndPeriod(new Date(e.valueOf()))}
+          onAccept={(e) => e && setTradesAndPeriod(new Date(e.valueOf()))}
         />
       </div>
       <TableContainer

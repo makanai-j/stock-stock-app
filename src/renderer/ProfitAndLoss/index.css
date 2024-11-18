@@ -64,23 +64,3 @@
 .pnl-list-container td {
   padding: 2px 4px;
 }
-
-.pnl-summary {
-  padding: 0 20px;
-  color: #eef;
-}
-
-.pnl-summary h3 {
-  margin: 10% 0;
-  padding: 5px 15px;
-  font-size: 13px;
-  font-weight: 600;
-  background-color: #222244;
-  border-radius: 2px;
-}
-
-.pnl-summary div {
-  width: fit-content;
-  margin-left: auto;
-  margin-right: 5px;
-}

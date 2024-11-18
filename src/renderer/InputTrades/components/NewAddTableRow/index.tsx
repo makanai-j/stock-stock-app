@@ -11,7 +11,7 @@ import { MyNumberField } from 'renderer/MyMui/MyNumberField'
 
 import { StyledTableCell } from '../../../MyMui/StyledTableCell'
 
-export const NewAddTableRow = ({
+export const NewAddTableRow0 = ({
   onClickAdd,
 }: {
   onClickAdd: (target: string) => void

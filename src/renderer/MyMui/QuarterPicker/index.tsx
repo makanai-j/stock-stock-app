@@ -1,6 +1,7 @@
 import { StyledEngineProvider } from '@mui/material'
 import { TextFieldProps } from '@mui/material/TextField'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePickerProps } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { Dayjs } from 'dayjs'
 import * as React from 'react'
@@ -8,8 +9,6 @@ import * as React from 'react'
 import { DatePicker as DP } from './DatePicker'
 import { DateTextField } from '../DateTextFIeld'
 
-import '../style.css'
-import { DatePickerProps } from '@mui/x-date-pickers/DatePicker'
 
 export const QuarterPicker = React.forwardRef(
   (props: DatePickerProps<Dayjs>, ref: React.Ref<HTMLDivElement>) => {

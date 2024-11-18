@@ -1,36 +1,39 @@
 import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { MenuItem, TableRow } from '@mui/material'
-import dayjs from 'dayjs'
-import { useState } from 'react'
+import { TableRow } from '@mui/material'
 
 import HashStr from 'renderer/InputTrades/hooks/Hash11'
 import { useInputTradesDispatch } from 'renderer/InputTrades/InputTradesContext'
 import {
   IconButtonCancel,
   IconButtonNormal,
-  MyDateTimePicker,
-  MySelect,
-  MyTextField,
-  MyNumberField,
   StyledTableCell,
 } from 'renderer/MyMui'
 
+import { DateTimeFieldInPieces } from './DateTimeFieldInPieces'
+import { PriceInput } from './InputField/PriceInput'
+import { StyledInputField } from './InputField/StyledInputField'
+import { StyledInputSelect } from './InputSelect/StyledInputSelect'
+
 export const TradeTabledRow = ({
   trade,
-  index,
+  intervalIndex,
+  rowBackgroundColor,
 }: {
   trade: TradeRecord
-  index: number
+  intervalIndex: number
+  rowBackgroundColor: string
 }) => {
-  const [dateTime, setDateTime] = useState(dayjs(trade.date))
   const dispatch = useInputTradesDispatch()
-  //const [trade, setTrade] = useState(initializedTrade)
 
   console.log(trade.id)
 
   return (
-    <TableRow hover sx={{ cursor: 'pointer' }}>
+    <TableRow
+      hover
+      sx={{ cursor: 'pointer' }}
+      style={{ backgroundColor: rowBackgroundColor }}
+    >
       <StyledTableCell>
         <IconButtonNormal
           aria-label="copyAdd"
@@ -51,43 +54,72 @@ export const TradeTabledRow = ({
       </StyledTableCell>
       {/* group */}
       <StyledTableCell>
-        <button
-          onClick={() =>
-            dispatch && dispatch({ type: 'pushInGroup', id: trade.id })
-          }
-        >
-          g
-        </button>
+        <ShowOnFirstIndex text={''} index={intervalIndex}>
+          <div
+            style={{
+              width: '18px',
+              height: '18px',
+              padding: '5px',
+              borderRadius: '50%',
+              margin: 0,
+            }}
+            onClick={() =>
+              dispatch && dispatch({ type: 'pushInGroup', id: trade.id })
+            }
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#ccf'
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'rgb(220,220,220)'
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+          >
+            <div
+              style={{
+                width: '18px',
+                height: '18px',
+                fontSize: '15px',
+                textAlign: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+              }}
+            >
+              G
+            </div>
+          </div>
+        </ShowOnFirstIndex>
       </StyledTableCell>
       {/**
        * datetime
        * numberで保存することで、sqlとjsでの違いをなくす
        */}
       <StyledTableCell>
-        <ShowOnFirstIndex text={formatToDateTime(trade.date)} index={index}>
-          <MyDateTimePicker
-            format="YYYY/M/D H:m"
-            value={dayjs(trade.date)}
-            onClose={() =>
+        <ShowOnFirstIndex
+          text={formatToDateTime(trade.date)}
+          index={intervalIndex}
+        >
+          <DateTimeFieldInPieces
+            value={new Date()}
+            onChange={(date) => {
               dispatch &&
-              dispatch({
-                type: 'update',
-                trade: {
-                  ...trade,
-                  date: dateTime.valueOf(),
-                },
-              })
-            }
-            onChange={(e) => e && setDateTime(e)}
+                dispatch({
+                  type: 'update',
+                  trade: {
+                    ...trade,
+                    date: date.getTime(),
+                  },
+                })
+            }}
           />
         </ShowOnFirstIndex>
       </StyledTableCell>
       {/** symbol */}
       <StyledTableCell>
-        <ShowOnFirstIndex text={trade.symbol} index={index}>
-          <MyTextField
+        <ShowOnFirstIndex text={trade.symbol} index={intervalIndex}>
+          <StyledInputField
             value={trade.symbol}
-            sx={{ width: '80px' }}
+            style={{ width: '50px', textAlign: 'center' }}
             onChange={(e) =>
               dispatch &&
               dispatch({
@@ -100,8 +132,8 @@ export const TradeTabledRow = ({
       </StyledTableCell>
       {/** tradetype */}
       <StyledTableCell>
-        <ShowOnFirstIndex text={trade.tradeType} index={index}>
-          <MySelect
+        <ShowOnFirstIndex text={trade.tradeType} index={intervalIndex}>
+          <StyledInputSelect
             value={trade.tradeType}
             onChange={(e) =>
               dispatch &&
@@ -122,23 +154,23 @@ export const TradeTabledRow = ({
               '信用返済買',
               '信用返済売',
             ].map((type, i) => (
-              <MenuItem value={type} key={type} sx={{ fontSize: '13px' }}>
+              <option value={type} key={type}>
                 {type}
-              </MenuItem>
+              </option>
             ))}
-          </MySelect>
+          </StyledInputSelect>
         </ShowOnFirstIndex>
       </StyledTableCell>
       {/** quantity */}
       <StyledTableCell>
-        <MyNumberField
+        <PriceInput
           value={trade.quantity}
-          sx={{ width: '80px' }}
-          onChange={(e) =>
+          style={{ width: '60px' }}
+          onChange={(quantity) =>
             dispatch &&
             dispatch({
               type: 'update',
-              trade: { ...trade, quantity: Number(e.target.value) },
+              trade: { ...trade, quantity },
             })
           }
         />
@@ -146,14 +178,14 @@ export const TradeTabledRow = ({
       {/** price fee tax */}
       {['price', 'fee', 'tax'].map((field) => (
         <StyledTableCell key={field}>
-          <MyNumberField
+          <PriceInput
             value={trade[field as keyof TradeRecord] as number}
-            sx={{ width: '80px' }}
-            onChange={(e) =>
+            style={{ width: '50px' }}
+            onChange={(value) =>
               dispatch &&
               dispatch({
                 type: 'update',
-                trade: { ...trade, [field]: Number(e.target.value) },
+                trade: { ...trade, [field]: value },
               })
             }
           />
@@ -161,8 +193,9 @@ export const TradeTabledRow = ({
       ))}
       {/** holdtype */}
       <StyledTableCell>
-        <ShowOnFirstIndex text={trade.holdType} index={index}>
-          <MySelect
+        <ShowOnFirstIndex text={trade.holdType} index={intervalIndex}>
+          <StyledInputSelect
+            style={{ width: '60px' }}
             value={trade.holdType}
             onChange={(e) =>
               dispatch &&
@@ -176,11 +209,11 @@ export const TradeTabledRow = ({
             }
           >
             {['一般', '特定', 'NISA'].map((type) => (
-              <MenuItem value={type} key={type} sx={{ fontSize: '13px' }}>
+              <option value={type} key={type}>
                 {type}
-              </MenuItem>
+              </option>
             ))}
-          </MySelect>
+          </StyledInputSelect>
         </ShowOnFirstIndex>
       </StyledTableCell>
       <StyledTableCell>

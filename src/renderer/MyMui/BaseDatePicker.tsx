@@ -7,8 +7,6 @@ import * as React from 'react'
 
 import { DateTextField } from './DateTextFIeld'
 
-import './style.css'
-
 export const BaseDatePicker = React.forwardRef(
   (props: DatePickerProps<Dayjs>, ref: React.Ref<HTMLDivElement>) => {
     return (

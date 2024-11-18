@@ -1,4 +1,3 @@
-import './style.css'
 import { StyledEngineProvider } from '@mui/material'
 import {
   DateTimePicker,

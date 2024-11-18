@@ -14,6 +14,7 @@ import { findIntervalPnLByDate } from './hooks/findIntervalPnLByDate'
 import { getPnL } from './hooks/getPnL'
 //import { PnLProvider } from './PnLContext'
 import './index.css'
+import { PnLSummary } from './components/PnLSummary'
 
 export const GainAndLoss = () => {
   return (
@@ -68,24 +69,40 @@ const GainAndLossChild = () => {
       eChartsOption.interval
     )
   }
-  const { selectedTradePnLs, periodPnL } = useMemo(() => {
-    const stp = getSelectedTradePnLs()
-    let pPnL = 0
-    for (let i = 0; i < stp.length; i++) {
-      for (let j = 0; j < stp[i].length; j++) {
-        pPnL += getPnL(stp[i][j])
-      }
-    }
-    return { selectedTradePnLs: stp, periodPnL: pPnL }
-  }, [tradePnLs, eChartsOption])
 
-  const totalPnL = useMemo(() => {
-    if (!tradePnLs) return 0
-    let total = 0
+  const { selectedTradePnLs, periodPnL, periodPnLPlus, periodPnLMinus } =
+    useMemo(() => {
+      const stp = getSelectedTradePnLs()
+      let periodPnLPlus = 0
+      let periodPnLMinus = 0
+      for (let i = 0; i < stp.length; i++) {
+        for (let j = 0; j < stp[i].length; j++) {
+          const pnl = getPnL(stp[i][j])
+          if (pnl < 0) periodPnLMinus += pnl
+          else periodPnLPlus += pnl
+        }
+      }
+      return {
+        selectedTradePnLs: stp,
+        periodPnL: periodPnLPlus + periodPnLMinus,
+        periodPnLPlus,
+        periodPnLMinus,
+      }
+    }, [tradePnLs, eChartsOption])
+
+  const { totalPnL, totalPnLPlus, totalPnLMinus } = useMemo(() => {
+    let totalPnLPlus = 0
+    let totalPnLMinus = 0
     for (let i = 0; i < tradePnLs.length; i++) {
-      total += getPnL(tradePnLs[i])
+      const pnl = getPnL(tradePnLs[i])
+      if (pnl < 0) totalPnLMinus += pnl
+      else totalPnLPlus += pnl
     }
-    return total
+    return {
+      totalPnL: totalPnLPlus + totalPnLMinus,
+      totalPnLPlus,
+      totalPnLMinus,
+    }
   }, [tradePnLs])
 
   return (
@@ -97,12 +114,14 @@ const GainAndLossChild = () => {
         <PnLList tradePnLs={selectedTradePnLs} />
       </div>
       <div style={{ display: 'flex' }}>
-        <div className="pnl-summary no-wrap other-size-height">
-          <h3>総合損益</h3>
-          <div>{totalPnL}円</div>
-          <h3>期間損益</h3>
-          <div>{periodPnL}円</div>
-        </div>
+        <PnLSummary
+          totalPnL={totalPnL}
+          totalPnLPlus={totalPnLPlus}
+          totalPnLMinus={totalPnLMinus}
+          periodPnL={periodPnL}
+          periodPnLPlus={periodPnLPlus}
+          periodPnLMinus={periodPnLMinus}
+        />
         <OtherCharts tradePnLs={selectedTradePnLs} />
       </div>
       <PnLChart groupedByPeriodPnL={groupedByPeriodPnL}></PnLChart>

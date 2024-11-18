@@ -1,7 +1,6 @@
+import { StyledEngineProvider } from '@mui/material'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import React from 'react'
-import './style.css'
-import { StyledEngineProvider } from '@mui/material'
 
 export const MyTextField = React.forwardRef(
   (props: TextFieldProps, ref: React.Ref<HTMLDivElement>) => {

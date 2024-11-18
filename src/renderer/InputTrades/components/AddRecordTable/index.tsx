@@ -24,6 +24,7 @@ export const AddRecordTable = (props: { tradeGroups: TradeRecord[][] }) => {
             <TradeGroupComponent
               key={`${trades.length}-${i}`}
               tradeGroup={trades}
+              periodIndex={i}
             />
           ))}
         </TableBody>
@@ -33,12 +34,19 @@ export const AddRecordTable = (props: { tradeGroups: TradeRecord[][] }) => {
 }
 
 const TradeGroupComponent = React.memo(
-  ({ tradeGroup }: { tradeGroup: TradeRecord[] }) => {
+  ({
+    tradeGroup,
+    periodIndex,
+  }: {
+    tradeGroup: TradeRecord[]
+    periodIndex: number
+  }) => {
     return tradeGroup.map((trade, index) => (
       <TradeTabledRow
         key={`${trade.id}-${index}`}
         trade={trade}
-        index={index}
+        intervalIndex={index}
+        rowBackgroundColor={periodIndex % 2 ? '#222244' : '#2f2f5f'}
       />
     ))
   }
