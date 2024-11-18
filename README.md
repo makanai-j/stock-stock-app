@@ -63,6 +63,16 @@ npm install
 npm run start
 ```
 
+### コマンド
+
+| コマンド | 実行内容             |
+| -------- | -------------------- |
+| start    | ビルド＆スタート     |
+| make     | exeファイル作成      |
+| lint     | フォーマットチェック |
+| fix      | import 部分修正      |
+| format   | コードフォーマット   |
+
 ## 操作方法
 
 [stockstock 操作マニュアル](https://makanai-j.github.io/stock-stock.github.io/?version=a1b2c3d)

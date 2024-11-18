@@ -11,7 +11,7 @@ export const DateTimeFieldInPieces = ({
 }) => {
   const [dateMap, setDateMap] = useState<Record<string, number>>({
     year: value.getFullYear(),
-    month: value.getMonth(),
+    month: value.getMonth() + 1,
     date: value.getDate(),
     hour: value.getHours(),
     minute: value.getMinutes(),
@@ -46,6 +46,8 @@ export const DateTimeFieldInPieces = ({
       newDateMap.hour,
       newDateMap.minute
     )
+
+    console.log(newDate)
 
     onChange(newDate)
     setDateMap(newDateMap)

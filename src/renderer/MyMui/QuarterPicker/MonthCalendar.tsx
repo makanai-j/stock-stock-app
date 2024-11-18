@@ -148,7 +148,7 @@ export const MonthCalendar = React.forwardRef(function MonthCalendar<
         referenceDate: referenceDateProp,
         granularity: SECTION_TYPE_GRANULARITY.month,
       }),
-    [] // eslint-disable-line react-hooks/exhaustive-deps
+    []
   )
 
   const ownerState = props

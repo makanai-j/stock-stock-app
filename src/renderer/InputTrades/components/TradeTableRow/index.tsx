@@ -100,7 +100,7 @@ export const TradeTabledRow = ({
           index={intervalIndex}
         >
           <DateTimeFieldInPieces
-            value={new Date()}
+            value={new Date(trade.date)}
             onChange={(date) => {
               dispatch &&
                 dispatch({

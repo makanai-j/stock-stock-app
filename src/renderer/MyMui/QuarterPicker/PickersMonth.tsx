@@ -1,4 +1,4 @@
-import { styled, alpha, useThemeProps } from '@mui/material/styles'
+import { Theme, styled, alpha, useThemeProps } from '@mui/material/styles'
 import composeClasses from '@mui/utils/composeClasses'
 import useEnhancedEffect from '@mui/utils/useEnhancedEffect'
 import useSlotProps from '@mui/utils/useSlotProps'
@@ -81,7 +81,7 @@ const MonthCalendarButton = styled('button', {
   ],
 })<{
   ownerState?: PickersMonthProps
-}>(({ theme }) => ({
+}>(({ theme }: { theme: Theme }) => ({
   color: 'unset',
   backgroundColor: 'transparent',
   border: 0,
@@ -103,28 +103,35 @@ const MonthCalendarButton = styled('button', {
   width: '100%',
   borderRadius: 21,
   cursor: 'pointer',
+  // '&:focus': {
+  //   backgroundColor: theme.vars
+  //     ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})`
+  //     : alpha(theme.palette.action.active, theme.palette.action.hoverOpacity),
+  // },
   '&:focus': {
-    backgroundColor: theme.vars
-      ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})`
-      : alpha(theme.palette.action.active, theme.palette.action.hoverOpacity),
+    backgroundColor: alpha(
+      theme.palette.action.active,
+      theme.palette.action.hoverOpacity
+    ),
   },
   '&:hover': {
-    backgroundColor: theme.vars
-      ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})`
-      : alpha(theme.palette.action.active, theme.palette.action.hoverOpacity),
+    backgroundColor: alpha(
+      theme.palette.action.active,
+      theme.palette.action.hoverOpacity
+    ),
   },
   '&:disabled': {
     cursor: 'auto',
     pointerEvents: 'none',
   },
   [`&.${pickersMonthClasses.disabled}`]: {
-    color: (theme.vars || theme).palette.text.secondary,
+    color: theme.palette.text.secondary,
   },
   [`&.${pickersMonthClasses.selected}`]: {
-    color: (theme.vars || theme).palette.primary.contrastText,
-    backgroundColor: (theme.vars || theme).palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.main,
     '&:focus, &:hover': {
-      backgroundColor: (theme.vars || theme).palette.primary.dark,
+      backgroundColor: theme.palette.primary.dark,
     },
   },
 }))

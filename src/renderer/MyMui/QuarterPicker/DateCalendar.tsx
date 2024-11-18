@@ -9,10 +9,6 @@ import {
   DateCalendarProps,
   DateCalendarDefaultizedProps,
 } from '@mui/x-date-pickers/DateCalendar/DateCalendar.types'
-
-/**
- * 変更
- */
 import { getDateCalendarUtilityClass } from '@mui/x-date-pickers/DateCalendar/dateCalendarClasses'
 import { PickersFadeTransitionGroup } from '@mui/x-date-pickers/DateCalendar/PickersFadeTransitionGroup'
 import { useCalendarState } from '@mui/x-date-pickers/DateCalendar/useCalendarState'
