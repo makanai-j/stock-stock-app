@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
+import * as path from 'path'
 
 import { CRUD } from './db/crud'
 import { objectToCamelCase, objectToSnakeCase } from './db/dbHooks'
@@ -18,7 +19,10 @@ if (require('electron-squirrel-startup')) {
 
 const createWindow = (): void => {
   // Create the browser window.
+  console.log(__dirname)
+  console.log(path.join(__dirname, '/assets/icon.ico'))
   const mainWindow = new BrowserWindow({
+    icon: '../assets/icon.ico',
     height: 600,
     width: 800,
     minWidth: 600,
