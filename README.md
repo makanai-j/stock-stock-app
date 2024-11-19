@@ -63,15 +63,15 @@ npm install
 npm run start
 ```
 
-### コマンド
+### コマンド一覧
 
-| コマンド | 実行内容             |
-| -------- | -------------------- |
-| start    | ビルド＆スタート     |
-| make     | exeファイル作成      |
-| lint     | フォーマットチェック |
-| fix      | import 部分修正      |
-| format   | コードフォーマット   |
+| コマンド       | 実行内容             |
+| -------------- | -------------------- |
+| npm run start  | ビルド＆スタート     |
+| npm run make   | exeファイル作成      |
+| npm run lint   | フォーマットチェック |
+| npm run fix    | import 部分修正      |
+| npm run format | コードフォーマット   |
 
 > [!WARNING]
 >
