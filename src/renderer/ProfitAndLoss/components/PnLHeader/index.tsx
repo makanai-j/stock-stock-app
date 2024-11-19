@@ -1,12 +1,11 @@
 import ListAltIcon from '@mui/icons-material/ListAlt'
-import { MenuItem } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
 import { useEffect, useState } from 'react'
 
+import { StyledInputSelect } from 'renderer/InputTrades/components/TradeTableRow/InputSelect/StyledInputSelect'
 import {
   BaseDatePicker,
   IconButtonNormal,
-  MySelect,
   QuarterPicker,
 } from 'renderer/MyMui'
 import {
@@ -28,7 +27,7 @@ export const PnLHeader = (props: { toggle: () => void }) => {
         display: 'flex',
       }}
     >
-      <MySelect
+      <StyledInputSelect
         value={eChartsOption?.interval}
         onChange={(e) =>
           eChartsOptionDispatch &&
@@ -37,13 +36,19 @@ export const PnLHeader = (props: { toggle: () => void }) => {
             interval: e.target.value as PnLInterval,
           })
         }
-        sx={{ marginLeft: '3px', marginRight: '6px' }}
+        style={{
+          width: '50px',
+          height: '22.5px',
+          marginTop: '1px',
+          marginLeft: '3px',
+          marginRight: '6px',
+        }}
       >
-        <MenuItem value="1d">日</MenuItem>
-        <MenuItem value="1w">週</MenuItem>
-        <MenuItem value="1mo">月</MenuItem>
-        <MenuItem value="1y">年</MenuItem>
-      </MySelect>
+        <option value="1d">日</option>
+        <option value="1w">週</option>
+        <option value="1mo">月</option>
+        <option value="1y">年</option>
+      </StyledInputSelect>
       <SwitchDatePicker />
       <IconButtonNormal
         onClick={props.toggle}

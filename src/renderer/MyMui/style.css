@@ -6,7 +6,7 @@
 }
 
 /* outer month calendar */
-.css-wvbfxi-MuiMonthCalendar-root {
+.MuiMonthCalendar-root {
   width: 220px;
   padding: 0;
 }
@@ -30,32 +30,27 @@
 }
 
 /*　outer calendar */
-.css-5wchs2-MuiDateCalendar-root,
-/* outer day calendar */
-.css-11yms7-MuiDateCalendar-root
-
-/* outer year valendar 
-.css-th0wnz-MuiYearCalendar-root*/
-  {
+.MuiDateCalendar-root {
   height: 310px;
 }
 
 /* inner year calendar */
-.css-hwynws-MuiPickersFadeTransitionGroup-root-MuiDateCalendar-viewTransitionContainer>div {
+/* .MuiPickersFadeTransitionGroup-root, */
+.MuiDateCalendar-viewTransitionContainer>div {
   height: 254px;
 }
 
 /* month */
-.css-gexdxk-MuiPickersMonth-root {
+.MuiPickersMonth-root {
   height: 50px;
 }
 
 /* year button */
-.css-innj4t-MuiPickersYear-yearButton {
+.MuiPickersYear-yearButton {
   width: 70px;
 }
 
-.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
+.MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
   height: 310px;
   overflow-y: scroll;
   /* IE, Edge 対応 */
@@ -65,12 +60,12 @@
 }
 
 /* Chrome, Safari 対応 */
-.MuiMultiSectionDigitalClock-root css-8fykvn-MuiMultiSectionDigitalClock-root ul {
+.MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
   display: none;
 }
 
 /* calendarHeader */
-.css-1nxbkmn-MuiPickersCalendarHeader-root {
+.MuiPickersCalendarHeader-root {
   padding-left: 15px;
   position: -webkit-sticky;
   position: sticky;
@@ -133,19 +128,19 @@ DayCalendar dayButton
 } */
 
 /* selected date border */
-.css-qct7wd-MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected) {
+.MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected) {
   border-color: #aaa;
 }
 
 /* innner day calendar */
-.css-1n1xn3x-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition,
-.css-1n1xn3x-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition {
+.MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition,
+.MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition {
   height: 210px;
   min-height: 210px;
 }
 
 /* Time scroll bar */
-.css-8fykvn-MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
+.MuiMultiSectionDigitalClock-root.MuiMultiSectionDigitalClock-root ul {
   width: 40px;
 }
 
@@ -157,33 +152,31 @@ DayCalendar dayButton
 }
 
 /* textfield */
-.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root {
+.MuiInputBase-root,
+.MuiOutlinedInput-root {
   height: 24px;
 }
 
-.css-elo8k2-MuiInputAdornment-root {
+.MuiInputAdornment-root {
   margin-left: 0;
 }
 
-.css-4pv4i0-MuiFormControl-root-MuiTextField-root .MuiInputBase-input,
-.css-1bs8i4o-MuiFormControl-root-MuiTextField-root .MuiInputBase-input {
+.MuiFormControl-root-MuiTextField-root .MuiInputBase-input,
+.MuiFormControl-root-MuiTextField-root .MuiInputBase-input {
   padding: 5px;
 }
 
-.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root {
+.MuiInputBase-root,
+.MuiOutlinedInput-root {
   border-radius: 0;
 }
 
-.css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root {
-  border-radius: 0;
-}
-
-.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+.MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
   border-color: transparent;
 }
 
 /* textfield calendar button */
-.css-oeq6yz-MuiButtonBase-root-MuiIconButton-root {
+.MuiButtonBase-root-MuiIconButton-root {
   padding: 3px;
 }
 
