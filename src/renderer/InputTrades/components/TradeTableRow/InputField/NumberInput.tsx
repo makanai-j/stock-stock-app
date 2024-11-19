@@ -14,8 +14,8 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       return targetValue
     }
 
-    const [thisValue, setThisValue] = useState<number | '-'>(
-      getChackedMinMaxValue(value)
+    const [thisValue, setThisValue] = useState<string>(
+      getChackedMinMaxValue(value).toString()
     )
 
     // `value`が変更されたときに`thisValue`を更新
@@ -32,8 +32,14 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         style={style}
         onFocus={(e) => e.target.select()}
         onBlur={() => {
-          const checkedValue = getChackedMinMaxValue(thisValue)
-          setThisValue(checkedValue)
+          const numberValue = Number(thisValue)
+          if (isNaN(numberValue)) {
+            setThisValue('0')
+            onChange && onChange(0)
+            return
+          }
+          const checkedValue = getChackedMinMaxValue(numberValue)
+          setThisValue(checkedValue.toString())
           onChange && onChange(checkedValue)
         }}
         onChange={(e) => {
@@ -41,7 +47,12 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           const newValue = Number(e.target.value)
 
           if (e.target.value === '-') setThisValue('-')
-          else if (!isNaN(newValue)) setThisValue(newValue)
+          // else if (!isNaN(newValue)) setThisValue(newValue)
+          else if (!isNaN(newValue))
+            setThisValue(
+              newValue +
+                (e.target.value[e.target.value.length - 1] == '.' ? '.' : '')
+            )
         }}
       />
     )

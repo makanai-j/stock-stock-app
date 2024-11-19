@@ -13,7 +13,7 @@ export const TradesInfo = ({ trades }: { trades: TradeRecordRaw[] }) => {
             </th>
             <th scope="col">取引</th>
             <th scope="col">株数</th>
-            <th scope="col">値段</th>
+            <th scope="col">約定単価</th>
             <th scope="col" colSpan={2}>
               市場
             </th>

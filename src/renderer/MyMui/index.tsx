@@ -15,9 +15,9 @@ import {
 } from './MyIconButton'
 import { MyNumberField } from './MyNumberField'
 import { MySelect } from './MySelect'
-import { MyTextField } from './MyTextFIeld'
 import { QuarterPicker } from './QuarterPicker'
 import { StyledTableCell } from './StyledTableCell'
+import { MyTextField } from './StyledTextField'
 import './style.css'
 
 export {

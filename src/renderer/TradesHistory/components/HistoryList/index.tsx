@@ -205,7 +205,7 @@ export const HistoryList = () => {
               </StickyTableCell>
               <StyledTableCell align="center">取引</StyledTableCell>
               <StyledTableCell align="center">株数</StyledTableCell>
-              <StyledTableCell align="center">値段</StyledTableCell>
+              <StyledTableCell align="center">約定単価</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
