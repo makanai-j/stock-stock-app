@@ -6,6 +6,7 @@ import { StyledInputField } from './StyledInputField'
 export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   (props, ref) => {
     const { value = 0, onChange, onBlur, min, max, style } = props
+    let caretPos = 0
 
     const getChackedMinMaxValue = (targetValue: number | '-') => {
       if (targetValue == '-') return 0
@@ -18,12 +19,36 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       getChackedMinMaxValue(value).toString()
     )
 
-    // `value`が変更されたときに`thisValue`を更新
-    // useEffect(() => {
-    //   const checkedValue = getChackedMinMaxValue(value)
-    //   setThisValue(checkedValue)
-    //   onChange && onChange(checkedValue)
-    // }, [value])
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newStrValue = e.target.value
+      const newNomValue = Number(newStrValue)
+
+      if (/^[-.]$/.test(newStrValue)) return setThisValue(newStrValue)
+      // 数字以外の場合は元の値を返す
+      else if (isNaN(newNomValue)) return
+
+      // // caret position get
+      if (e.target.selectionStart) {
+        caretPos = e.target.selectionStart
+      }
+
+      // textfield update
+      setThisValue(newStrValue)
+
+      onChange?.(newNomValue)
+
+      // caret position change
+      const orgColor = e.target.style.caretColor
+      e.target.style.caretColor = 'transparent'
+
+      // caret position set
+      setTimeout(() => {
+        e.target.focus()
+        e.target.setSelectionRange(caretPos, caretPos)
+
+        e.target.style.caretColor = orgColor
+      }, 1)
+    }
 
     return (
       <StyledInputField
@@ -33,29 +58,13 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         onFocus={(e) => e.target.select()}
         onBlur={() => {
           const numberValue = Number(thisValue)
-          if (isNaN(numberValue)) {
-            setThisValue('0')
-            onBlur?.(0)
-            return
-          }
-          const checkedValue = getChackedMinMaxValue(numberValue)
+          const checkedValue = getChackedMinMaxValue(
+            isNaN(numberValue) ? 0 : numberValue
+          )
           setThisValue(checkedValue.toString())
           onBlur?.(checkedValue)
         }}
-        onChange={(e) => {
-          if (!e) return
-          const newValue = Number(e.target.value)
-
-          if (e.target.value === '-') setThisValue('-')
-          // else if (!isNaN(newValue)) setThisValue(newValue)
-          else if (!isNaN(newValue)) {
-            setThisValue(
-              newValue +
-                (e.target.value[e.target.value.length - 1] == '.' ? '.' : '')
-            )
-            onChange?.(newValue)
-          }
-        }}
+        onChange={handleChange}
       />
     )
   }

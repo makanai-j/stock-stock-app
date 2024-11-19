@@ -9,6 +9,7 @@ export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   (props, ref) => {
     const { value = 0, onChange, onBlur, min, max, style } = props
     let caretPos = 0
+    let isDeleteKey = false
 
     const getCheckedMinMaxValue = (targetValue: number) => {
       if (min !== undefined && targetValue < min) return min
@@ -41,24 +42,25 @@ export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       onBlur?.(checkedValue)
     }
 
-    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-      const newStrValue = e.currentTarget.value
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newStrValue = e.target.value
       const newNomValue = Number(deleteComma(newStrValue))
 
-      // 数字以外の場合は値を変更せず返す
-      if (e.currentTarget.value === '-') return setThisValue('-')
+      if (/^[-.]$/.test(newStrValue)) return setThisValue(newStrValue)
+      // 数字以外の場合は元の値を返す
       else if (isNaN(newNomValue)) return
 
-      onChange?.(newNomValue)
-
-      const formattedNewStrValue =
-        priceFormatter(newNomValue) +
-        (newStrValue[newStrValue.length - 1] == '.' ? '.' : '')
+      const [integer, decimal] = deleteComma(newStrValue).split('.')
+      // 整数部はコンマ区切り
+      let formattedNewStrValue = /^-?$/g.test(integer)
+        ? integer
+        : priceFormatter(Number(integer))
+      // ドットがあれば小数を加える
+      if (typeof decimal === 'string') formattedNewStrValue += `.${decimal}`
 
       // caret position get
-      if (e.currentTarget.selectionStart) {
-        caretPos = e.currentTarget.selectionStart
-        console.log(caretPos)
+      if (e.target.selectionStart) {
+        caretPos = e.target.selectionStart
 
         const pattern = /[0-9.-]/g
         const matches = newStrValue.slice(0, caretPos).match(pattern)
@@ -72,22 +74,30 @@ export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           countPos++
         }
 
+        // deleteへの対応
+        // カンマは無敵状態としてcaretを移動させるだけにする
+        const preCommaNum = thisValue.match(/,/g)?.length || 0
+        const newCommaNum = newStrValue.match(/,/g)?.length || 0
+        if (isDeleteKey) countPos += preCommaNum > newCommaNum ? 1 : 0
+
         caretPos = countPos
       }
+
       // textfield update
       setThisValue(formattedNewStrValue)
-    }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.(newNomValue)
+
+      // caret position change
+      const orgColor = e.target.style.caretColor
       e.target.style.caretColor = 'transparent'
 
       // caret position set
       setTimeout(() => {
-        console.log(e.target.selectionStart)
         e.target.focus()
         e.target.setSelectionRange(caretPos, caretPos)
 
-        e.target.style.caretColor = 'white'
+        e.target.style.caretColor = orgColor
       }, 1)
     }
 
@@ -97,9 +107,11 @@ export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         value={thisValue}
         style={style}
         onFocus={(e) => e.target.select()}
-        onBlur={handleBlur}
-        onInput={handleInput}
+        onKeyDown={(e) => {
+          isDeleteKey = e.key === 'Delete'
+        }}
         onChange={handleChange}
+        onBlur={handleBlur}
       />
     )
   }
