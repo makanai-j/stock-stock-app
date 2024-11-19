@@ -81,7 +81,7 @@ export const DateTimeFieldInPieces = ({
               }}
               min={min}
               max={max}
-              onChange={(value) => changeDate(series, value)}
+              onBlur={(value) => changeDate(series, value)}
             />
             {<p>{suffix}</p>}
           </React.Fragment>

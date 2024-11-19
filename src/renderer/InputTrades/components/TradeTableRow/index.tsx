@@ -181,13 +181,13 @@ export const TradeTabledRow = ({
           <PriceInput
             value={trade[field as keyof TradeRecord] as number}
             style={{ width: '50px' }}
-            onChange={(value) =>
+            onChange={(value) => {
               dispatch &&
-              dispatch({
-                type: 'update',
-                trade: { ...trade, [field]: value },
-              })
-            }
+                dispatch({
+                  type: 'update',
+                  trade: { ...trade, [field]: value },
+                })
+            }}
           />
         </StyledTableCell>
       ))}

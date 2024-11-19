@@ -5,7 +5,7 @@ import { StyledInputField } from './StyledInputField'
 
 export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   (props, ref) => {
-    const { value = 0, onChange, min, max, style } = props
+    const { value = 0, onChange, onBlur, min, max, style } = props
 
     const getChackedMinMaxValue = (targetValue: number | '-') => {
       if (targetValue == '-') return 0
@@ -35,12 +35,12 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           const numberValue = Number(thisValue)
           if (isNaN(numberValue)) {
             setThisValue('0')
-            onChange && onChange(0)
+            onBlur?.(0)
             return
           }
           const checkedValue = getChackedMinMaxValue(numberValue)
           setThisValue(checkedValue.toString())
-          onChange && onChange(checkedValue)
+          onBlur?.(checkedValue)
         }}
         onChange={(e) => {
           if (!e) return
@@ -48,11 +48,13 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
           if (e.target.value === '-') setThisValue('-')
           // else if (!isNaN(newValue)) setThisValue(newValue)
-          else if (!isNaN(newValue))
+          else if (!isNaN(newValue)) {
             setThisValue(
               newValue +
                 (e.target.value[e.target.value.length - 1] == '.' ? '.' : '')
             )
+            onChange?.(newValue)
+          }
         }}
       />
     )

@@ -7,7 +7,7 @@ import { StyledInputField } from './StyledInputField'
 
 export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   (props, ref) => {
-    const { value = 0, onChange, min, max, style } = props
+    const { value = 0, onChange, onBlur, min, max, style } = props
     let caretPos = 0
 
     const getCheckedMinMaxValue = (targetValue: number) => {
@@ -38,7 +38,7 @@ export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         isNaN(parsedValue) ? 0 : parsedValue
       )
       setThisValue(priceFormatter(checkedValue))
-      onChange?.(checkedValue)
+      onBlur?.(checkedValue)
     }
 
     const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -48,6 +48,8 @@ export const PriceInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       // 数字以外の場合は値を変更せず返す
       if (e.currentTarget.value === '-') return setThisValue('-')
       else if (isNaN(newNomValue)) return
+
+      onChange?.(newNomValue)
 
       const formattedNewStrValue =
         priceFormatter(newNomValue) +
