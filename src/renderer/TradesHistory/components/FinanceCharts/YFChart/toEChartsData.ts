@@ -77,7 +77,10 @@ export const toEChartsData = (
     RepayTradeTypeArray.includes(trade.tradeType)
   )
 
+  // 取引日に最も近いチャートデータ内の日付
+  // 新規取引日
   const newTradeCloserDates: Date[] = []
+  // 返済取引日
   const repayTradeCloserDates: Date[] = []
   const eChartsData: EChartsData = {
     xAxisData: [],
@@ -207,10 +210,12 @@ export const toEChartsData = (
   // markline
   eChartsData.buyLineData.push(
     {
-      xAxis: newTradeCloserDates[0].toLocaleString(
-        'ja-JP',
-        formatFullMap[interval]
-      ),
+      xAxis: newTradeCloserDates.length
+        ? newTradeCloserDates[0].toLocaleString(
+            'ja-JP',
+            formatFullMap[interval]
+          )
+        : '-----',
     }
     // ...newTradeCloserDates.map((date) => {
     //   return { xAxis: date.toLocaleString('ja-JP', formatFullMap[interval]) }
@@ -227,7 +232,7 @@ export const toEChartsData = (
         ? repayTradeCloserDates[
             repayTradeCloserDates.length - 1
           ].toLocaleString('ja-JP', formatFullMap[interval])
-        : eChartsData.xAxisData[eChartsData.xAxisData.length - 1],
+        : '-----',
     }
     // ...repayTradeCloserDates.map((date) => {
     //   return { xAxis: date.toLocaleString('ja-JP', formatFullMap[interval]) }

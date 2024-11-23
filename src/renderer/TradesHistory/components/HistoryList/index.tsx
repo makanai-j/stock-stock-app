@@ -12,19 +12,17 @@ import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
 
 import { priceFormatter } from 'renderer/hooks/priceFormatter'
-import { BaseDatePicker } from 'renderer/MyMui'
+import { BaseDatePicker } from 'renderer/Parts/MyMui'
+import {
+  useFocusedTrades,
+  useFocusedTradesDispatch,
+} from 'renderer/TradesHistory/FocusedTradesContext'
 import {
   formatToDateDay,
   formatToTime,
 } from 'renderer/TradesHistory/hooks/formatToTime'
-import {
-  useSelectedTrades,
-  useSelectedTradesDispatch,
-} from 'renderer/TradesHistory/SelectedTradesContext'
-import {
-  useYFOptions,
-  useYFOptionsDispatch,
-} from 'renderer/TradesHistory/YFOptionsContext'
+import { getHistoryTrades } from 'renderer/TradesHistory/hooks/getHistoryTrades'
+import { useTradeSyncDispatch } from 'renderer/TradesHistory/TradeSyncContext'
 
 const stickyStyles = {
   header: [
@@ -90,13 +88,10 @@ const stickyStyles = {
 
 /** 履歴リスト */
 export const HistoryList = () => {
-  const [listPeriod, setListPeriod] = useState(new Date())
-  const [listTrades, setListTrades] = useState<TradeRecordRaw[]>([])
-  const [hoverTrade, setHoverTrade] = useState<TradeRecordRaw | null>(null)
-  const selectedTrades = useSelectedTrades()
-  const tradesDispatch = useSelectedTradesDispatch()
-  const yfOptions = useYFOptions()
-  const yfOptionsDispatch = useYFOptionsDispatch()
+  const [displayedDate, setdisplayedDate] = useState(new Date())
+  const focusedTrades = useFocusedTrades()
+  const focusedTradesDispatch = useFocusedTradesDispatch()
+  const tradeSyncDispatch = useTradeSyncDispatch()
 
   useEffect(() => {
     window.crudAPI
@@ -104,50 +99,61 @@ export const HistoryList = () => {
       .then((trades) => {
         if (trades.length) {
           console.log(trades)
-          setChartsTrades(trades[0].id)
-          setTradesAndPeriod(new Date(trades[0].date))
+          setHistoryTrades(new Date(trades[0].date))
+          selectTrade(trades[0].id)
         }
       })
   }, [])
 
-  const setTradesAndPeriod = (date: Date) => {
-    setListPeriod(date)
-    const period1 = new Date(date)
-    period1.setDate(1)
-    period1.setHours(0, 0)
-    const period2 = new Date(date)
-    period2.setMonth(period2.getMonth() + 1)
-    period2.setDate(0)
-    period2.setHours(23, 59)
-    window.crudAPI
-      .select({
-        mode: 'raw',
-        filter: { period1: period1.getTime(), period2: period2.getTime() },
-      })
+  /**
+   * 履歴のリストをセットする
+   * @param date 表示する年月
+   */
+  const setHistoryTrades = (date: Date) => {
+    setdisplayedDate(date)
+    getHistoryTrades(date)
       .then((trades) => {
-        setListTrades(trades)
+        console.log('setted history', trades)
+        focusedTradesDispatch &&
+          focusedTradesDispatch({ type: 'setHistory', trades, date })
       })
       .catch((e) => {
         console.log(e)
       })
   }
 
-  const setChartsTrades = (tradeId: string) => {
+  /**
+   * 選択された取引に紐づいている全取引を取得
+   * @param tradeId 選択された取引id
+   */
+  const selectTrade = (tradeId: string) => {
     window.crudAPI.select({ mode: 'raw', id: tradeId }).then((trades) => {
       if (trades.length) {
-        const period1 = new Date(trades[0].date)
-        const period2 =
-          trades.length > 0
-            ? new Date(trades[trades.length - 1].date)
-            : new Date()
+        console.log('selected trades', trades)
 
-        yfOptionsDispatch &&
-          yfOptionsDispatch({
-            type: 'set',
-            options: { interval: yfOptions?.interval, period1, period2 },
+        focusedTradesDispatch &&
+          focusedTradesDispatch({ type: 'select', trades, id: tradeId })
+
+        console.log('useeffect editsheet')
+        if (!trades) return
+        const tradeRecord: TradeRecord[] = []
+        for (const trade of trades) {
+          tradeRecord.push({
+            id: trade.id,
+            date: new Date(trade.date).getTime(),
+            symbol: trade.symbol,
+            tradeType: trade.tradeType,
+            holdType: trade.holdType,
+            quantity: trade.quantity,
+            restQuantity: trade.restQuantity,
+            price: trade.price,
+            fee: trade.fee,
+            tax: trade.tax,
           })
-
-        tradesDispatch && tradesDispatch({ type: 'set', trades: trades })
+        }
+        console.log(tradeRecord)
+        tradeSyncDispatch &&
+          tradeSyncDispatch({ type: 'initialize', trades: tradeRecord })
       }
     })
   }
@@ -155,13 +161,13 @@ export const HistoryList = () => {
   const listBackroundColor = (id: string) => {
     return {
       backgroundColor:
-        (selectedTrades &&
-          selectedTrades.map((trade) => trade.id).includes(id)) ||
-        (hoverTrade && hoverTrade.id == id)
+        focusedTrades.selectedTrades &&
+        focusedTrades.selectedTrades.map((trade) => trade.id).includes(id)
           ? '#2D2B55'
           : '#222244',
       '&.MuiTableRow-root:hover': {
         backgroundColor: '#2D2B55',
+        cursor: 'pointer',
       },
     }
   }
@@ -170,14 +176,14 @@ export const HistoryList = () => {
     <div>
       <div style={{ height: '24px', padding: '5px' }}>
         <BaseDatePicker
-          value={dayjs(listPeriod)}
+          value={dayjs(focusedTrades.selectedDate)}
           format="YYYY/M"
           formatDensity="spacious"
           views={['year', 'month']}
           slotProps={{
             calendarHeader: { format: 'YYYY/M' },
           }}
-          onAccept={(e) => e && setTradesAndPeriod(new Date(e.valueOf()))}
+          onAccept={(e) => e && setHistoryTrades(new Date(e.valueOf()))}
         />
       </div>
       <TableContainer
@@ -209,10 +215,11 @@ export const HistoryList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {listTrades.map((trade, i) => (
+            {focusedTrades.history.map((trade, i) => (
               <React.Fragment key={trade.id}>
+                {/** 日付の変わり目で日付を表示 */}
                 {(i == 0 ||
-                  new Date(listTrades[i - 1].date).getDate() !==
+                  new Date(focusedTrades.history[i - 1].date).getDate() !==
                     new Date(trade.date).getDate()) && (
                   <TableRow>
                     <StickyTableCell align="center" sx={stickyStyles.cell[0]}>
@@ -232,19 +239,11 @@ export const HistoryList = () => {
                 <TableRow
                   hover
                   sx={{
-                    backgroundColor:
-                      selectedTrades &&
-                      selectedTrades.map((trade) => trade.id).includes(trade.id)
-                        ? '#2D2B55'
-                        : '#222244',
-                    '&.MuiTableRow-root:hover': {
-                      backgroundColor: '#2D2B55',
-                      cursor: 'pointer',
-                    },
+                    ...listBackroundColor(trade.id),
                   }}
-                  onClick={() => setChartsTrades(trade.id)}
-                  onMouseEnter={() => setHoverTrade(trade)}
-                  onMouseLeave={() => setHoverTrade(null)}
+                  onClick={() => selectTrade(trade.id)}
+                  // onMouseEnter={() => setHoverTrade(trade)}
+                  // onMouseLeave={() => setHoverTrade(null)}
                 >
                   <StickyTableCell
                     sx={{

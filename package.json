@@ -1,6 +1,6 @@
 {
-  "name": "stock-stock-app",
-  "productName": "stock-stock-app",
+  "name": "stockstock",
+  "productName": "stockstock",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",

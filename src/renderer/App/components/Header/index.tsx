@@ -5,7 +5,7 @@ import './index.css'
 import { Tooltip } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 
-import { IconButtonNormal } from 'renderer/MyMui'
+import { IconButtonNormal } from 'renderer/Parts/MyMui'
 
 export const Header = () => {
   const location = useLocation()

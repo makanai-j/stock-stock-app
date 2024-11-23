@@ -10,6 +10,7 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     border: 0,
   },
   [`&.${tableCellClasses.body}`]: {
+    position: 'relative',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     color: '#eef',

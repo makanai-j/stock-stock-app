@@ -22,20 +22,22 @@ export const OtherCharts = ({
     <div className="other-container other-size-height">
       <Piee data={toBusinessTypePie(tradePnLs)} />
       <Piee data={toLongShortPie(tradePnLs)} suffix="円" />
-      <Scatter
-        data={toTimeAndPnLScatterData(longTrades)}
-        title="時間と損益の関係 ロング"
-        color={['#f55']}
-      />
-      {shortTrades.length ? (
+      <>
+        {/* {!!longTrades.length && ( */}
+        <Scatter
+          data={toTimeAndPnLScatterData(longTrades)}
+          title="時間と損益の関係 ロング"
+          color={['#f55']}
+        />
+        {/* )} */}
+        {/* {!!shortTrades.length && ( */}
         <Scatter
           data={toTimeAndPnLScatterData(shortTrades)}
           title="時間と損益の関係 ショート"
           color={['#55f']}
         />
-      ) : (
-        <></>
-      )}
+        {/* )} */}
+      </>
     </div>
   )
 }

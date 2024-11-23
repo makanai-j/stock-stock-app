@@ -3,9 +3,9 @@ import styled from '@emotion/styled'
 export const StyledInputSelect = styled.select`
   color: white;
   background-color: #3f3f7e;
-  font-size: 13;
+  font-size: 11px;
   width: 90px;
-  height: 19px;
+  height: 23px;
   padding: 2px 2px;
   margin: 0 3px;
   text-align: center;

@@ -1,4 +1,6 @@
-import { YFChartObject, YFOptions } from '../types/YFTypes'
+import { TradeSyncContextType } from 'renderer/TradesHistory/TradeSyncContext'
+
+//import { YFChartObject, YFOptions } from '../types/YFTypes'
 
 export interface IElectronAPI {
   /**
@@ -14,6 +16,9 @@ export interface IElectronAPI {
    * @returns csvファイルのデータ
    */
   fileRead: () => Promise<string[][]>
+  messageBox: (
+    options: Electron.MessageBoxOptions
+  ) => Promise<Electron.MessageBoxReturnValue>
 }
 
 export interface ICrudAPI {
@@ -57,6 +62,12 @@ export interface ICrudAPI {
    * @returns
    */
   delete: (ids: string[]) => Promise<void>
+  /**
+   *
+   * @param syncObj
+   * @returns
+   */
+  sync: (syncObj: TradeSyncContextType) => Promise<void>
 }
 
 declare global {

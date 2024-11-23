@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
-import { NumberInput } from '../../../Parts/InputField/NumberInput'
+import { NumberInput } from './InputField/NumberInput'
 
 export const DateTimeFieldInPieces = ({
   value,
@@ -9,13 +9,22 @@ export const DateTimeFieldInPieces = ({
   value: Date
   onChange: (date: Date) => void
 }) => {
-  const [dateMap, setDateMap] = useState<Record<string, number>>({
-    year: value.getFullYear(),
-    month: value.getMonth() + 1,
-    date: value.getDate(),
-    hour: value.getHours(),
-    minute: value.getMinutes(),
-  })
+  const getDateMapByDate = (date: Date) => {
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      date: date.getDate(),
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+    }
+  }
+
+  const [dateMap, setDateMap] = useState<Record<string, number>>(
+    getDateMapByDate(value)
+  )
+  useEffect(() => {
+    setDateMap(getDateMapByDate(value))
+  }, [value])
 
   const maxDate = useMemo(() => {
     const date = new Date(value)
@@ -37,8 +46,6 @@ export const DateTimeFieldInPieces = ({
       [series]: value,
     }
 
-    console.log('a')
-
     const newDate = new Date(
       newDateMap.year,
       newDateMap.month - 1,
@@ -46,9 +53,6 @@ export const DateTimeFieldInPieces = ({
       newDateMap.hour,
       newDateMap.minute
     )
-
-    console.log(newDate)
-
     onChange(newDate)
     setDateMap(newDateMap)
   }

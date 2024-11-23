@@ -1,11 +1,10 @@
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import DeleteIcon from '@mui/icons-material/Delete'
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
 import { TableRow } from '@mui/material'
+import { useMemo } from 'react'
 
-import HashStr from 'renderer/InputTrades/hooks/Hash11'
-import { useInputTradesDispatch } from 'renderer/InputTrades/InputTradesContext'
+import { DateTimeFieldInPieces } from 'renderer/Parts/DateTimeFieldInPieces'
 import { PriceInput } from 'renderer/Parts/InputField/PriceInput'
-import { StyledInputField } from 'renderer/Parts/InputField/StyledInputField'
 import { StyledInputSelect } from 'renderer/Parts/InputSelect/StyledInputSelect'
 import {
   IconButtonCancel,
@@ -13,9 +12,12 @@ import {
   StyledTableCell,
 } from 'renderer/Parts/MyMui'
 
-import { DateTimeFieldInPieces } from './DateTimeFieldInPieces'
+import {
+  useTradeSync,
+  useTradeSyncDispatch,
+} from '../../../../TradeSyncContext'
 
-export const TradeTabledRow = ({
+export const EditTabledRow = ({
   trade,
   intervalIndex,
   rowBackgroundColor,
@@ -24,7 +26,15 @@ export const TradeTabledRow = ({
   intervalIndex: number
   rowBackgroundColor: string
 }) => {
-  const dispatch = useInputTradesDispatch()
+  const tradeSync = useTradeSync()
+  const dispatch = useTradeSyncDispatch()
+
+  const isDelete = useMemo(
+    () => tradeSync.deleteIds.includes(trade.id),
+    [tradeSync.deleteIds]
+  )
+
+  console.log('edit row', trade)
 
   return (
     <TableRow
@@ -32,62 +42,6 @@ export const TradeTabledRow = ({
       sx={{ cursor: 'pointer' }}
       style={{ backgroundColor: rowBackgroundColor }}
     >
-      <StyledTableCell>
-        <IconButtonNormal
-          aria-label="copyAdd"
-          size="small"
-          sx={{
-            color: 'rgb(220,220,220)',
-          }}
-          onClick={() =>
-            dispatch &&
-            dispatch({
-              type: 'push',
-              trade: { ...trade, id: HashStr.randCode() },
-            })
-          }
-        >
-          <AddToPhotosIcon fontSize="inherit" />
-        </IconButtonNormal>
-      </StyledTableCell>
-      {/* group */}
-      <StyledTableCell>
-        <ShowOnFirstIndex text={''} index={intervalIndex}>
-          <div
-            style={{
-              width: '18px',
-              height: '18px',
-              padding: '5px',
-              borderRadius: '50%',
-              margin: 0,
-            }}
-            onClick={() =>
-              dispatch && dispatch({ type: 'pushInGroup', id: trade.id })
-            }
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#ccf'
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgb(220,220,220)'
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-          >
-            <div
-              style={{
-                width: '18px',
-                height: '18px',
-                fontSize: '15px',
-                textAlign: 'center',
-                justifyContent: 'center',
-                fontWeight: 600,
-              }}
-            >
-              G
-            </div>
-          </div>
-        </ShowOnFirstIndex>
-      </StyledTableCell>
       {/**
        * datetime
        * numberで保存することで、sqlとjsでの違いをなくす
@@ -111,22 +65,7 @@ export const TradeTabledRow = ({
             }}
           />
         </ShowOnFirstIndex>
-      </StyledTableCell>
-      {/** symbol */}
-      <StyledTableCell>
-        <ShowOnFirstIndex text={trade.symbol} index={intervalIndex}>
-          <StyledInputField
-            value={trade.symbol}
-            style={{ width: '50px', textAlign: 'center' }}
-            onChange={(e) =>
-              dispatch &&
-              dispatch({
-                type: 'update',
-                trade: { ...trade, symbol: e.target.value },
-              })
-            }
-          />
-        </ShowOnFirstIndex>
+        {isDelete && <StrikeThrough />}
       </StyledTableCell>
       {/** tradetype */}
       <StyledTableCell>
@@ -158,6 +97,7 @@ export const TradeTabledRow = ({
             ))}
           </StyledInputSelect>
         </ShowOnFirstIndex>
+        {isDelete && <StrikeThrough />}
       </StyledTableCell>
       {/** quantity */}
       <StyledTableCell>
@@ -172,6 +112,7 @@ export const TradeTabledRow = ({
             })
           }
         />
+        {isDelete && <StrikeThrough />}
       </StyledTableCell>
       {/** price fee tax */}
       {['price', 'fee', 'tax'].map((field) => (
@@ -187,6 +128,7 @@ export const TradeTabledRow = ({
                 })
             }}
           />
+          {isDelete && <StrikeThrough />}
         </StyledTableCell>
       ))}
       {/** holdtype */}
@@ -213,16 +155,32 @@ export const TradeTabledRow = ({
             ))}
           </StyledInputSelect>
         </ShowOnFirstIndex>
+        {isDelete && <StrikeThrough />}
       </StyledTableCell>
       <StyledTableCell>
-        <IconButtonCancel
-          aria-label="delete"
-          size="small"
-          sx={{ color: 'rgb(220,100,100)' }}
-          onClick={() => dispatch && dispatch({ type: 'delete', id: trade.id })}
-        >
-          <DeleteIcon fontSize="inherit" />
-        </IconButtonCancel>
+        {isDelete ? (
+          <IconButtonNormal
+            aria-label="deleteCancel"
+            size="small"
+            sx={{ color: 'rgb(150,150,220)' }}
+            onClick={() => {
+              dispatch && dispatch({ type: 'deleteCancel', id: trade.id })
+            }}
+          >
+            <RestoreFromTrashIcon fontSize="inherit" />
+          </IconButtonNormal>
+        ) : (
+          <IconButtonCancel
+            aria-label="delete"
+            size="small"
+            sx={{ color: 'rgb(220,100,100)' }}
+            onClick={() =>
+              dispatch && dispatch({ type: 'delete', id: trade.id })
+            }
+          >
+            <DeleteIcon fontSize="inherit" />
+          </IconButtonCancel>
+        )}
       </StyledTableCell>
     </TableRow>
   )
@@ -259,6 +217,32 @@ const ShowOnFirstIndex = ({
           {text}
         </div>
       )}
+    </div>
+  )
+}
+
+const StrikeThrough = () => {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        top: 0,
+        left: 0,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          height: '4px',
+          backgroundColor: 'rgba(255,255,255,0.6)',
+        }}
+      ></div>
     </div>
   )
 }

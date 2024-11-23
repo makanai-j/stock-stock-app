@@ -1,4 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+
+import { TradeSyncContextType } from 'renderer/TradesHistory/TradeSyncContext'
 
 import { CRUD } from './db/crud'
 import { objectToCamelCase, objectToSnakeCase } from './db/dbHooks'
@@ -20,7 +22,7 @@ const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     title: 'stockstock',
-    icon: './src/assets/stockstockicon',
+    icon: './src/assets/stockstockicon2.ico',
     height: 600,
     width: 800,
     minWidth: 600,
@@ -69,10 +71,24 @@ app.on('ready', () => {
     return CRUD.delete(ids)
   })
 
+  ipcMain.handle(
+    'sync',
+    (_event, syncObj: TradeSyncContextType): Promise<void> => {
+      return CRUD.sync(syncObj)
+    }
+  )
+
   // csvファイルを読み込み
   ipcMain.handle('fileRead', () => {
     return csvFileRead()
   })
+
+  ipcMain.handle(
+    'messageBox',
+    (_event, options: Electron.MessageBoxOptions) => {
+      return dialog.showMessageBox(options)
+    }
+  )
 
   createWindow()
 })

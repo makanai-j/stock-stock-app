@@ -52,6 +52,7 @@ function InputTradesReducer(
   tradeGroups: TradeRecord[][],
   action: InputTradesAction
 ): TradeRecord[][] {
+  console.log('in input reducer')
   switch (action.type) {
     case 'push':
       return [...tradeGroups, [action.trade]]
@@ -63,6 +64,7 @@ function InputTradesReducer(
         })
       })
     case 'add':
+      console.log('in add')
       return [...tradeGroups, [initializeTrade()]]
     case 'delete':
       return tradeGroups

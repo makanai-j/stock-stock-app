@@ -9,7 +9,7 @@ const turnedTradeType = (type: TradeType): TradeType => {
   return '信用返済買'
 }
 
-const isNewTradeType = (
+const isEntryTradeType = (
   type: TradeType
 ): type is '現物買' | '信用新規買' | '信用新規売' => {
   return ['現物買', '信用新規買', '信用新規売'].includes(type)
@@ -59,4 +59,9 @@ function objectToSnakeCase(obj: { [key: string]: any } | TradeRecordDB) {
   return objSnake
 }
 
-export { turnedTradeType, isNewTradeType, objectToCamelCase, objectToSnakeCase }
+export {
+  turnedTradeType,
+  isEntryTradeType,
+  objectToCamelCase,
+  objectToSnakeCase,
+}

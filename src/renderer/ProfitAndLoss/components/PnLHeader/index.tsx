@@ -1,13 +1,14 @@
 import ListAltIcon from '@mui/icons-material/ListAlt'
+import { Tooltip } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
 import { useEffect, useState } from 'react'
 
-import { StyledInputSelect } from 'renderer/InputTrades/components/TradeTableRow/InputSelect/StyledInputSelect'
+import { StyledInputSelect } from 'renderer/Parts/InputSelect/StyledInputSelect'
 import {
   BaseDatePicker,
   IconButtonNormal,
   QuarterPicker,
-} from 'renderer/MyMui'
+} from 'renderer/Parts/MyMui'
 import {
   useEChartsOption,
   useEChartsOptionDispatch,
@@ -21,8 +22,7 @@ export const PnLHeader = (props: { toggle: () => void }) => {
   return (
     <div
       style={{
-        height: '24px',
-        padding: '5px',
+        height: '34px',
         fontSize: '13px',
         display: 'flex',
       }}
@@ -39,7 +39,7 @@ export const PnLHeader = (props: { toggle: () => void }) => {
         style={{
           width: '50px',
           height: '22.5px',
-          marginTop: '1px',
+          marginTop: '6px',
           marginLeft: '3px',
           marginRight: '6px',
         }}
@@ -49,20 +49,21 @@ export const PnLHeader = (props: { toggle: () => void }) => {
         <option value="1mo">月</option>
         <option value="1y">年</option>
       </StyledInputSelect>
-      <SwitchDatePicker />
-      <IconButtonNormal
-        onClick={props.toggle}
-        size="small"
-        sx={{
-          color: '#ccf',
-          width: '24px',
-          height: '24px',
-          marginLeft: 'auto',
-          marginRight: '5%',
-        }}
-      >
-        <ListAltIcon fontSize="inherit" />
-      </IconButtonNormal>
+      <div style={{ height: '24px', padding: '5px' }}>
+        <SwitchDatePicker />
+      </div>
+
+      <Tooltip title={'リスト'}>
+        <IconButtonNormal
+          onClick={props.toggle}
+          size="small"
+          style={{
+            margin: '3px 15px 3px auto',
+          }}
+        >
+          <ListAltIcon style={{ color: '#ccf' }} fontSize="inherit" />
+        </IconButtonNormal>
+      </Tooltip>
     </div>
   )
 }

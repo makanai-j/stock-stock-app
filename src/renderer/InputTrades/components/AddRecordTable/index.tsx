@@ -9,9 +9,8 @@ import {
 import React from 'react'
 
 import './index.css'
-import { IconButtonNormal } from 'renderer/MyMui'
+import { IconButtonNormal, StyledTableCell } from 'renderer/Parts/MyMui'
 
-import { StyledTableCell } from '../../../MyMui/StyledTableCell'
 import { TradeTabledRow } from '../TradeTableRow'
 
 export const AddRecordTable = (props: { tradeGroups: TradeRecord[][] }) => {

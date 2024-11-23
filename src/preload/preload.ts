@@ -1,9 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
+import { TradeSyncContextType } from 'renderer/TradesHistory/TradeSyncContext'
+
 contextBridge.exposeInMainWorld('electronAPI', {
   financeData: async (symbol: string, options: YFOptions) =>
     await ipcRenderer.invoke('chart', { symbol, options }),
   fileRead: async () => await ipcRenderer.invoke('fileRead'),
+  messageBox: async (options: Electron.MessageBoxOptions) =>
+    await ipcRenderer.invoke('messageBox', options),
 })
 
 contextBridge.exposeInMainWorld('crudAPI', {
@@ -28,6 +32,7 @@ contextBridge.exposeInMainWorld('crudAPI', {
     ipcRenderer.invoke('update', trades)
   },
   delete: (ids: string[]) => ipcRenderer.invoke('delete', ids),
+  sync: (syncObj: TradeSyncContextType) => ipcRenderer.invoke('sync', syncObj),
 })
 
 const isRejectedPromise = (response: any) => {

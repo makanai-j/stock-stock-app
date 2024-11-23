@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { NumberInputProps } from './InputFieldProps'
 import { StyledInputField } from './StyledInputField'
@@ -18,6 +18,11 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     const [thisValue, setThisValue] = useState<string>(
       getChackedMinMaxValue(value).toString()
     )
+
+    useEffect(() => {
+      console.log('in numberinput')
+      setThisValue(getChackedMinMaxValue(value).toString())
+    }, [value])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newStrValue = e.target.value

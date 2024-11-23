@@ -12,7 +12,7 @@ import type { ForgeConfig } from '@electron-forge/shared-types'
 const config: ForgeConfig = {
   packagerConfig: {
     name: 'stockstock',
-    icon: './src/assets/stockstockicon',
+    icon: './src/assets/stockstockicon2',
   },
   rebuildConfig: {},
   makers: [
